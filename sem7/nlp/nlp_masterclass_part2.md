@@ -507,6 +507,54 @@ David Yarowsky (1995) showed that high-accuracy WSD ($>96\%$) can be achieved wi
 
 ---
 
+### 🌟 Language Dictionaries in NLP: WordNet vs BabelNet [10 Marks] — Nov'25 (Q5b)
+> **MU Official Exam Question (Paper Code 42175, Q5b):**
+> *"Compare the structure, contents, and utility of two major language dictionaries: WordNet and BabelNet in NLP."*
+
+#### 1. Executive Structural Overview:
+Modern NLP applications rely on computational semantic lexicons to ground words into structured concept hierarchies. **WordNet** represents the foundational human-curated English semantic network, while **BabelNet** represents the state-of-the-art multilingual encyclopedic knowledge graph.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                             WORDNET VS BABELNET                                  │
+│                                                                                  │
+│  [WORDNET] (Princeton Univ - Miller & Fellbaum):                                 │
+│  ┌───────────────────────┐                                                       │
+│  │ Lexical Synset        │ <--- Pure dictionary concepts (open-class lemmas)    │
+│  │ {car, automobile}     │      English-only; handcrafted by linguists           │
+│  └──────────┬────────────┘                                                       │
+│             │ Hypernym (IS-A)                                                    │
+│             ▼                                                                    │
+│  ┌───────────────────────┐                                                       │
+│  │ {motor vehicle}       │                                                       │
+│  └───────────────────────┘                                                       │
+│                                                                                  │
+│  [BABELNET] (Sapienza Univ of Rome - Navigli & Ponzetto):                        │
+│  ┌────────────────────────────────────────────────────────────────────────┐      │
+│  │ Babel Synset: Concept #00016440n (Multilingual Encyclopedic Node)      │      │
+│  │ • English: {car, automobile}           • French: {voiture, auto}       │      │
+│  │ • Hindi:   {गाड़ी, कार}                  • Spanish: {coche, auto}        │      │
+│  │ • Wikipedia Articles: [[Automobile]]   • Wikidata ID: Q1420            │      │
+│  │ • Images & Synset Definitions mapped across 500+ Languages             │      │
+│  └────────────────────────────────────────────────────────────────────────┘      │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 2. Comprehensive Comparative Matrix:
+
+| Feature / Dimension | WordNet | BabelNet |
+|:---|:---|:---|
+| **Origin & Creators** | Developed at Princeton University by George Miller and Christiane Fellbaum (1985). | Developed at Sapienza University of Rome by Roberto Navigli and Simone Paolo Ponzetto (2010). |
+| **Linguistic Scope** | **Primarily Monolingual (English)**. (Other languages exist as separate, unlinked EuroWordNet projects). | **Massively Multilingual** (Over 500 languages including Hindi, Marathi, French, German, Mandarin). |
+| **Underlying Sources** | Pure human curation by expert lexicographers from scratch. | Algorithmic integration of **WordNet + Wikipedia + Wiktionary + Wikidata + OmegaWiki**. |
+| **Fundamental Unit** | **Synset** (Set of cognitive synonyms expressing an identical concept). | **Babel Synset** (Multilingual encyclopedic synset uniting dictionary senses and named entities). |
+| **Coverage: Concepts vs Entities** | Covers **Lexical Concepts** (common nouns, verbs, adjectives, adverbs). Extremely sparse named entities. | Covers **BOTH Lexical Concepts AND Encyclopedic Named Entities** (e.g., *Barack Obama, Mumbai, Google, iPhone*). |
+| **Semantic Relations** | Linguistic relations: Hyponymy/Hypernymy (IS-A), Meronymy/Holonymy (Part-Of), Antonymy, Entailment. | All WordNet relations **PLUS Wikipedia cross-lingual inter-wiki links**, redirected relations, and Wikidata triples. |
+| **Scale / Volume** | ~117,000 synsets, ~155,000 word forms (English). | **~20 Million Babel synsets**, ~1.4 Billion word senses across 500+ languages. |
+| **Primary Industrial Utility** | - Traditional WSD (Lesk Algorithm).<br>- Word similarity computation (Wu-Palmer, Path similarity).<br>- Baseline lemmatizer in NLTK/SpaCy. | - Cross-lingual Information Retrieval (CLIR).<br>- Multilingual Entity Linking & Disambiguation (NEL).<br>- Cross-lingual Machine Translation & Knowledge Graphs. |
+
+---
+
 ## MU Keyword Checklist: Module 4
 - [ ] *Homonymy (Unrelated origins, identical form), Polysemy (Related senses)*
 - [ ] *Synonymy, Antonymy (Complementary, Gradable, Relational)*
