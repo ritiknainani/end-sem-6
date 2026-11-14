@@ -1,6 +1,6 @@
 # Mumbai University (MU) Semester 7 — Management Information Systems (MIS)
 ## Masterclass Part 2: Modules 4, 5 & 6 (Social Computing, Cloud, ERP & Hospital MIS Design)
-**Course Code:** Department Level Optional Course (DLOC) | **Scheme:** Rev 2019 / C-Scheme | **Applicable Cycles:** Dec 2022 – May 2025
+**Course Code:** Department Level Optional Course (DLOC) | **Scheme:** Rev 2019 / C-Scheme | **Applicable Cycles:** Dec 2022 – Nov 2025 (7 Consecutive Exam Cycles)
 
 ---
 
@@ -9,7 +9,9 @@
 ---
 
 ## 4.1 Evolution of the Web: Web 1.0 vs Web 2.0 vs Web 3.0
-*(Appeared in: Dec 2022 Q1c [5M], Dec 2023 Q6b [10M])*
+*(Appeared in: Dec 2022 Q1c [5M], Dec 2023 Q6b [10M], Nov 2025 Q2b [10M])*
+
+The World Wide Web has evolved across three major technological and architectural paradigms:
 
 ```
 +---------------------------------------------------------------------------------------------------+
@@ -36,6 +38,22 @@
 |                    | Directory, Personal GeoCities| Facebook, Instagram, Reddit.  | Solid (Tim Berners-Lee).           |
 +--------------------+------------------------------+-------------------------------+------------------------------------+
 ```
+
+### Comprehensive Deep-Dive by Generation:
+1. **Web 1.0 (The Syntactic / Read-Only Web: 1991 – 2004):**
+   - *Technical Mechanics:* Static HTML files hosted on web servers delivered directly to client browsers over HTTP. No dynamic database-driven interaction; user interactivity was restricted to clicking hyperlinks and submitting basic web forms via CGI scripts.
+   - *Business Model:* Banner advertising and directory listings.
+   - *Real-World Examples:* Early CNN.com, Encyclopedia Britannica Online, personal GeoCities pages, Yahoo! Web Directory.
+2. **Web 2.0 (The Social / Read-Write Web: 2004 – Present):**
+   - *Technical Mechanics:* Dynamic client-server architecture powered by AJAX (Asynchronous JavaScript and XML) allowing asynchronous background data fetching without full page refreshes. Cloud-hosted relational/NoSQL databases, RESTful microservices, and mobile application ecosystems.
+   - *Defining Characteristic:* Users transform from passive consumers into active content creators (blogs, videos, reviews, social graph interactions).
+   - *Business Model:* Targeted programmatic advertising fueled by continuous behavioral surveillance and user data aggregation.
+   - *Real-World Examples:* YouTube, Facebook/Instagram, Wikipedia, Twitter/X, Reddit, TikTok.
+3. **Web 3.0 (The Semantic / Decentralized / Read-Write-Own Web: Emerging):**
+   - *Technical Mechanics:* Built on distributed ledgers (Ethereum, Solana), decentralized file storage (IPFS, Arweave), and semantic web ontologies (RDF, OWL, SPARQL) enabling machines to understand contextual data relationships.
+   - *Defining Characteristic:* Decentralization and cryptographic ownership. Users authenticate via asymmetric cryptographic keypairs (e.g., MetaMask wallets) rather than corporate OAuth (Sign-in with Google), granting true digital sovereignty over personal assets, identity, and content without platform intermediaries.
+   - *Business Model:* Tokenomics, decentralized finance (DeFi) protocol fees, smart-contract royalties, and DAO governance tokens.
+   - *Real-World Examples:* Uniswap (decentralized automated market maker), Brave Browser (BAT tokenomics), Lens Protocol (decentralized social graph), Solid Project.
 
 ---
 
@@ -232,7 +250,7 @@ A network topology defines the geometric arrangement of links and nodes.
 ---
 
 ## 5.3 Cloud Computing Service Models: IaaS vs PaaS vs SaaS vs CaaS
-*(Appeared in: Dec 2022 Q6b [10M], May 2023 Q4b [10M], Dec 2023 Q4a [10M], May 2024 Q2b/Q6a [10M], May 2025 Q6b [10M])*
+*(Appeared in: Dec 2022 Q6b [10M], May 2023 Q4b [10M], Dec 2023 Q4a [10M], May 2024 Q2b/Q6a [10M], May 2025 Q6b [10M], Nov 2025 Q2a [10M])*
 
 Cloud computing delivers on-demand computing resources over the internet on a utility pay-as-you-go pricing model.
 
@@ -292,19 +310,52 @@ Cloud computing delivers on-demand computing resources over the internet on a ut
 ---
 
 ## 6.1 Functional Area Information Systems (FAIS) & Types of Reports
-*(Appeared in: May 2023 Q3b [10M], Dec 2024 Q5a [10M], May 2025 Q2a [10M])*
+*(Appeared in: May 2023 Q3b [10M], Dec 2024 Q5a [10M], May 2025 Q2a [10M], Nov 2025 Q4b [10M], Nov 2025 Q5a [10M])*
 
-**Functional Area Information Systems (FAIS)** support specific business domains within an enterprise:
-1. **Accounting IS:** Manages invoices, general ledgers, accounts payable/receivable, financial auditing.
-2. **Finance IS:** Evaluates capital investment projects, financial cash flow forecasting, asset management.
-3. **Production / Operations Management (POM) IS:** Manages Bills of Materials (BOM), Materials Requirement Planning (MRP), plant scheduling, quality control.
-4. **Marketing IS:** Tracks customer demographics, market share analytics, campaign lead conversions.
-5. **Human Resources IS (HRIS):** Administers employee payroll, tax deductions, benefits enrollment, performance reviews, hiring pipelines.
+**Functional Area Information Systems (FAIS)** are specialized information systems tailored to support the specific business activities, workflows, and operational decision-making of distinct functional departments within an enterprise.
 
-### Enterprise Reporting Taxonomy:
+```
++---------------------------------------------------------------------------------------------------+
+|                         FUNCTIONAL AREA INFORMATION SYSTEMS (FAIS) ARCHITECTURE                   |
++---------------------------------------------------------------------------------------------------+
+|                                                                                                   |
+|  +--------------------+  +--------------------+  +--------------------+  +--------------------+   |
+|  |   ACCOUNTING IS    |  |     FINANCE IS     |  |    POM IS (OPS)    |  |    MARKETING IS    |   |
+|  | - Ledger & Invoices|  | - Capital budgeting|  | - MRP & Scheduling |  | - Campaign tracking|   |
+|  | - AR / AP & Audits |  | - Cash forecasting |  | - Quality & BOM    |  | - Pricing & Churn  |   |
+|  +--------------------+  +--------------------+  +--------------------+  +--------------------+   |
+|            \                       |                       |                      /               |
+|             \                      |                       |                     /                |
+|              +---------------------+-----------------------+--------------------+                 |
+|                                                |                                                  |
+|                                                v                                                  |
+|                                    +-----------------------+                                      |
+|                                    |     HUMAN RESOURCE    |                                      |
+|                                    |       IS (HRIS)       |                                      |
+|                                    | - Payroll & Benefits  |                                      |
+|                                    | - Talent & Compliance |                                      |
+|                                    +-----------------------+                                      |
+|                                                |                                                  |
+|                                                v                                                  |
+|                         [ SHARED TRANSACTION & REPORTING DATABASE ]                               |
++---------------------------------------------------------------------------------------------------+
+```
+
+### 1. Types of Support Provided by Functional Area Information Systems (FAIS)
+*(Mandatory 10-Mark Answer Breakdown for Nov 2025 Q5a)*
+
+| Functional Area | Operational Support (Day-to-Day) | Tactical Support (Management Control) | Strategic Support (Long-Term Planning) |
+| :--- | :--- | :--- | :--- |
+| **1. Accounting IS** | - Automated General Ledger posting<br>- Accounts Payable (AP) & Invoicing<br>- Accounts Receivable (AR) & billing<br>- Payroll ledger integration | - Monthly budgetary variance analysis<br>- Cash-flow reconciliations<br>- Internal audit compliance reports<br>- Tax filing preparation (GST/TDS) | - Multi-year capital depreciation strategies<br>- Global accounting standard compliance (IFRS vs GAAP)<br>- Profit center performance evaluation |
+| **2. Finance IS** | - Daily cash float tracking<br>- Real-time bank transaction feeds<br>- Credit limit approvals for orders<br>- FX currency exchange conversions | - Working capital management<br>- Investment portfolio monitoring<br>- Short-term credit risk scoring<br>- Budget allocation & reforecasting | - Long-term capital budgeting decisions<br>- Mergers & Acquisitions (M&A) valuation modeling<br>- Capital structure (debt-to-equity) optimization |
+| **3. Production / Operations Management (POM) IS** | - Shop-floor machine scheduling<br>- Bill of Materials (BOM) management<br>- Work-in-Progress (WIP) tracking<br>- Barcode inventory receiving | - Material Requirements Planning (MRP)<br>- Just-In-Time (JIT) replenishment<br>- Statistical Process Control (SPC)<br>- Equipment preventive maintenance alerts | - Plant location and capacity planning<br>- Supply chain network design<br>- Transition to advanced manufacturing (Industry 4.0 / Robotics) |
+| **4. Marketing IS** | - Point-of-Sale (POS) order logging<br>- Direct email campaign delivery<br>- Lead capture and assignment<br>- Promotional discount authorization | - Customer churn prediction analysis<br>- Product pricing elasticity analysis<br>- Channel sales performance reports<br>- Advertising ROI calculation | - New product development strategy<br>- Brand market share penetration modeling<br>- Long-term customer demographic shift forecasting |
+| **5. Human Resources IS (HRIS)** | - Time & biometric attendance tracking<br>- Monthly net salary disbursement<br>- Employee health benefits enrollment<br>- Job applicant resume parsing | - Employee turnover/retention analysis<br>- Performance appraisal management<br>- Skill gap and training need identification<br>- Workplace safety incident logs | - Long-term workforce succession planning<br>- Organizational restructuring modeling<br>- Strategic executive compensation planning |
+
+### 2. Enterprise Reporting Taxonomy:
 - **Scheduled Reports:** Produced at regular calendar intervals (e.g., Daily cash reconciliation report, Weekly sales summary).
 - **On-Demand (Ad-hoc) Reports:** Generated dynamically when a manager requests specific non-routine data.
-- **Exception Reports:** Highlight only critical anomalies or metrics that breach predefined operating thresholds (e.g., *"Report all warehouse items with stock < 10 units"*).
+- **Exception Reports:** Highlight only critical anomalies or metrics that breach predefined operating thresholds (e.g., *"Report all warehouse items with stock < 10 units"* or *"Expenses exceeding budget by > 15%"*).
 - **Drill-Down Reports:** Enable interactive exploration from high-level corporate numbers down to specific store receipts.
 - **Key-Indicator Reports:** Highly condensed executive summaries of vital operational health indicators.
 
@@ -350,9 +401,9 @@ Before ERP, traditional enterprises suffered from **Information Silos** (isolate
 ---
 
 ## 6.3 System Development Life Cycle (SDLC) & Modern Augmenting Tools
-*(Appeared in: May 2023 Q1c [5M], Dec 2023 Q5b [10M], Dec 2024 Q1c [5M], May 2025 Q1d/e [10M])*
+*(Appeared in: May 2023 Q1c [5M], Dec 2023 Q5b [10M], Dec 2024 Q1c [5M], May 2025 Q1d/e [10M], Nov 2025 Q6b [10M])*
 
-### The 6 Classic Phases of the SDLC (Waterfall):
+The **System Development Life Cycle (SDLC)** is a structured, phased framework used by IT organizations and system analysts to conceive, analyze, design, build, test, deploy, and maintain robust enterprise information systems.
 
 ```
 +---------------------------------------------------------------------------------------------------+
@@ -381,6 +432,57 @@ Before ERP, traditional enterprises suffered from **Information Silos** (isolate
 | 6. Operations & Maintenance (Bug fixes, security patching, feature enhancements)                 |
 +---------------------------------------------------------------------------------------------------+
 ```
+
+### Exhaustive 6-Phase Breakdown & Deliverables:
+*(Required for 10-Mark Answer in Nov 2025 Q6b)*
+
+1. **Phase 1: Systems Investigation & Feasibility Study:**
+   - *Core Objective:* Determine whether a proposed business problem or opportunity warrants building a new system.
+   - *TELOS Feasibility Framework:*
+     - **T - Technical Feasibility:** Does the enterprise possess the hardware, software, and engineering expertise to build and operate the solution?
+     - **E - Economic Feasibility (Cost-Benefit Analysis):** Calculates ROI, Net Present Value (NPV), and Payback Period to evaluate financial viability.
+     - **L - Legal & Contractual Feasibility:** Ensures compliance with copyright laws, GDPR, HIPAA, and existing vendor contracts.
+     - **O - Operational Feasibility:** Assesses organizational culture, employee willingness to adopt, and union/stakeholder resistance.
+     - **S - Schedule Feasibility:** Determines if the system can realistically be delivered before statutory or competitive deadlines.
+   - *Key Deliverable:* Formal **Feasibility Study Report** and Project Charter signed by executive sponsors.
+
+2. **Phase 2: Systems Analysis (What the System Must Do):**
+   - *Core Objective:* Thoroughly understand the existing legacy workflow and document complete end-user functional and non-functional requirements.
+   - *Techniques:* Contextual user interviews, focus groups, employee observation, document reviews, survey questionnaires.
+   - *Modeling Tools:* Data Flow Diagrams (DFD Level 0/1/2), Entity-Relationship (ER) conceptual modeling, UML Use Case Diagrams.
+   - *Key Deliverable:* **Software Requirements Specification (SRS)** document serving as the binding contractual baseline.
+
+3. **Phase 3: Systems Design (How the System Will Deliver Capabilities):**
+   - *Logical Design:* Abstract specifications of input forms, output reports, relational database schemas (3NF normalization), business validation logic, and workflow state machines.
+   - *Physical Design:* Concrete hardware procurement specifications, network topologies, server clustering, database index schemas, cybersecurity firewalls, and API endpoint contracts.
+   - *Key Deliverable:* **System Design Document (SDD)**, high-fidelity UI/UX wireframes, and physical database schemas.
+
+4. **Phase 4: Programming, Integration & Verification Testing:**
+   - *Core Objective:* Translate architectural specifications into clean, executable, documented code and verify zero-defect execution.
+   - *Testing Hierarchy:*
+     - **Unit Testing:** Individual software modules or microservices tested in isolation.
+     - **Integration Testing:** Verifying data exchanges and API contracts between interacting modules.
+     - **System Testing:** Validating overall system performance under load, stress, and security penetration testing.
+     - **User Acceptance Testing (UAT):** Real business end-users test the system in staging using actual operational scenarios to grant sign-off.
+   - *Key Deliverable:* Production-ready software build, automated test suites, and UAT sign-off documentation.
+
+5. **Phase 5: Implementation & Conversion Strategies:**
+   - *Core Objective:* Transition organizational operations from the obsolete legacy system to the new production system.
+   - *The 4 Conversion Strategies:*
+     - **Direct Cutover (Plunge / Big Bang):** Old system is shut down on Friday night; new system boots Monday morning. Highly risky with zero fallback if failure occurs.
+     - **Parallel Running:** Old and new systems run simultaneously for a period (e.g., 1 month). Safest strategy; outputs are compared for parity, but incurs double operational costs and workload.
+     - **Pilot Conversion:** System deployed entirely within one branch or department (e.g., Pune branch first). Bugs are resolved before enterprise-wide expansion.
+     - **Phased Rollout:** System modules are activated sequentially across the enterprise (e.g., Module 1 Accounting launched in Jan, Module 2 Inventory in Mar).
+   - *Key Deliverable:* Data migration scripts, user training manuals, and cutover sign-off.
+
+6. **Phase 6: Operations & Maintenance:**
+   - *Core Objective:* Ensure post-launch operational stability and accommodate evolving business requirements over the system's operational lifespan.
+   - *Maintenance Categories:*
+     - **Corrective Maintenance:** Fixing unanticipated production bugs and crashes.
+     - **Adaptive Maintenance:** Updating software to run on new OS versions or comply with newly enacted government tax regulations.
+     - **Perfective Maintenance:** Adding high-value user enhancement requests and optimizing query speeds.
+     - **Preventive Maintenance:** Routine database index defragmentation, log rotations, and security vulnerability patching.
+   - *Key Deliverable:* Post-implementation audit review, maintenance ticket logs, and continuous service level agreements (SLAs).
 
 ### Modern Tools Augmenting the Traditional SDLC:
 *(Appeared in: May 2023 Q1c, Dec 2024 Q1c, May 2025 Q1e)*
