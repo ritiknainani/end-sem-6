@@ -415,6 +415,64 @@ $$M = (S, s_0, T, \delta)$$
 
 ---
 
+### 🌟 Deep-Dive: Fixed vs Dynamic Arrays in Solidity [5 Marks] — Nov'25 (Q1b)
+**Question:** *"Explain Fixed and Dynamic arrays."*
+
+In Solidity, an **Array** is a data structure storing a sequential collection of elements of identical data type. Arrays can be initialized with fixed compile-time lengths or dynamically resizable run-time lengths:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                       FIXED VS DYNAMIC ARRAYS IN SOLIDITY                        │
+│                                                                                  │
+│  [FIXED-SIZE ARRAY]:                   [DYNAMIC-SIZE ARRAY]:                     │
+│  uint256[5] public fixedArr;           uint256[] public dynamicArr;              │
+│  ┌───┬───┬───┬───┬───┐                 ┌───┬───┬───┬───┐ + push(val)            │
+│  │ 0 │ 1 │ 2 │ 3 │ 4 │                 │ 0 │ 1 │ 2 │ 3 │ ───► [New Element]      │
+│  └───┴───┴───┴───┴───┘                 └───┴───┴───┴───┘                         │
+│  • Length fixed at compile time        • Length grows/shrinks dynamically        │
+│  • Cannot call .push() or .pop()       • Supports .push() and .pop() (Storage)   │
+│  • Contiguous memory slot layout       • Slot stores length; elements at keccak  │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 1. Fixed-Size Arrays:
+- **Syntax:** `T[k] variableName;` where $T$ is the type and $k$ is an integer literal known at compile-time.
+- **Characteristics:**
+  - Length cannot change during execution; attempting to resize triggers a compilation error.
+  - Can reside in `storage`, `memory`, or `calldata`.
+  - Does **not** support `.push()` or `.pop()` member methods.
+- **Example:**
+  ```solidity
+  uint256[3] public fixedGrades = [90, 85, 95];
+  // Access: fixedGrades[0] == 90
+  // fixedGrades.length == 3 (read-only)
+  ```
+
+#### 2. Dynamic-Size Arrays:
+- **Syntax:** `T[] variableName;`
+- **Characteristics:**
+  - Length can expand or contract dynamically during runtime in `storage`.
+  - Member functions available in storage:
+    - `.push(value)`: Appends an element to the end; increments array length by 1.
+    - `.pop()`: Removes the last element; decrements array length by 1.
+    - `.length`: Returns current element count.
+  - In `memory`, dynamic arrays must be instantiated with a fixed size using the `new` keyword and cannot be resized (e.g., `uint[] memory a = new uint[](5);` — `.push()` is invalid in memory).
+- **Example:**
+  ```solidity
+  uint256[] public dynamicScores;
+
+  function addScore(uint256 score) public {
+      dynamicScores.push(score); // Expands array length dynamically
+  }
+
+  function removeLast() public {
+      require(dynamicScores.length > 0, "Array is empty");
+      dynamicScores.pop(); // Shrinks array length
+  }
+  ```
+
+---
+
 ## 3.3 SOLVED SOLIDITY PROGRAM 1: Check If a Number Is Prime
 *(Appeared in: Dec 2022 Q1e [5M], May 2025 Q1b [5M])*
 

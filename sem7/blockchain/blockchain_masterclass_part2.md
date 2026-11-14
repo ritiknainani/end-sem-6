@@ -48,6 +48,76 @@ While Bitcoin operates as a decentralized calculator maintaining a UTXO ledger, 
 
 ---
 
+### 🌟 Deep-Dive: Complete Workflow of Ethereum [10 Marks] — Nov'25 (Q4a)
+> **MU Official Exam Question (Paper Code 42177, Q4a):**
+> *"Explain Workflow of Ethereum."*
+
+The operational lifecycle of Ethereum can be formalized as a deterministic state machine transition:
+$$\mathbf{\Upsilon(S, T) = S'}$$
+Where $S$ is the current World State, $T$ is a transaction, $\Upsilon$ is the Ethereum State Transition Function, and $S'$ is the new resultant World State.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                          COMPLETE ETHEREUM TRANSACTION WORKFLOW                  │
+│                                                                                  │
+│  [STEP 1: CREATION & SIGNING]                                                    │
+│  EOA User creates raw transaction: [Nonce, GasPrice, GasLimit, To, Value, Data]  │
+│  Signs with ECDSA Private Key (secp256k1) yielding signature (v, r, s)           │
+│                           │                                                      │
+│                           ▼                                                      │
+│  [STEP 2: MEMPOOL BROADCAST]                                                     │
+│  Transaction propagated over P2P Gossip protocol to validator/miner mempools     │
+│                           │                                                      │
+│                           ▼                                                      │
+│  [STEP 3: PRE-EXECUTION VALIDATION]                                              │
+│  • Signature valid? • Nonce == current account nonce?                            │
+│  • Sender balance >= (GasLimit * GasPrice + Value)?                              │
+│  • Upfront fee deducted: Sender Balance -= (GasLimit * GasPrice)                 │
+│  • Sender Nonce incremented by 1                                                 │
+│                           │                                                      │
+│                           ▼                                                      │
+│  [STEP 4: EVM BYTECODE EXECUTION]                                                │
+│  • If 'To' is EOA: Transfer value directly.                                      │
+│  • If 'To' is Contract (or empty to create contract):                            │
+│    Instantiate EVM stack, load contract bytecode into ROM.                       │
+│    Execute opcodes (PUSH, ADD, MSTORE, SSTORE); deduct gas per opcode.           │
+│                           │                                                      │
+│                           ▼                                                      │
+│  [STEP 5: STATE FINALIZATION & GAS REFUND]                                       │
+│  • Calculate remaining unused gas: GasRemaining = GasLimit - GasUsed             │
+│  • Refund remaining gas: Sender Balance += (GasRemaining * GasPrice)             │
+│  • Transfer fee to block builder/validator: Miner Fee = GasUsed * GasPrice       │
+│  • Update World State Trie root hash, Transaction Root, and Receipts Root        │
+│                           │                                                      │
+│                           ▼                                                      │
+│  [STEP 6: BLOCK PACKAGING & CONSENSUS]                                           │
+│  Block proposed by validator; attested by committee via PoS (Casper FFG/LMD GHOST)│
+│  Block finalized and appended permanently to blockchain ledger.                  │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Step 1: Transaction Creation & Cryptographic Signing:**
+   - The user constructs a payload containing: Nonce (prevents replay attacks), Gas Price, Gas Limit, Recipient Address (`To`), Ether Amount (`Value`), and optional Bytecode / Call Data (`Data`).
+   - The user signs the SHA3/Keccak-256 transaction hash with their private key using the **ECDSA secp256k1** elliptic curve algorithm, generating signature components $(v, r, s)$.
+2. **Step 2: P2P Network Propagation & Mempool Buffering:**
+   - The signed transaction is serialized and broadcast across the Ethereum devp2p network. Nodes verify cryptographic validity and place it into their local **Memory Pool (Mempool)**.
+3. **Step 3: Pre-Execution Validation:**
+   - Before executing code, the validating node verifies:
+     - The signature correctly recovers the sender's public key (EOA address).
+     - The transaction nonce matches the sender's account nonce exactly.
+     - The sender has sufficient Ether balance to pay the **maximum upfront cost**:
+       $$\text{Max Cost} = (\text{Gas Limit} \times \text{Gas Price}) + \text{Value}$$
+     - The upfront gas fee is immediately deducted, and the sender's nonce increments by 1.
+4. **Step 4: EVM Execution:**
+   - If `To` is empty, the EVM runs the initialization bytecode to deploy a **new smart contract**, returning the runtime bytecode stored in state.
+   - If `To` is a smart contract address, the EVM invokes the contract's code, feeding `Data` as input. Opcodes consume gas according to the EVM gas schedule.
+5. **Step 5: Post-Execution Gas Settlement:**
+   - Unused gas is refunded to the sender. If an `Out of Gas` error occurs, state changes roll back, but spent gas is forfeited to the miner.
+6. **Step 6: World State Update & Block Finalization:**
+   - Modified accounts generate a new **Merkle Patricia State Root Hash**. The transaction receipt (gas used, logs, event topics) is added to the Receipts Trie. The proposed block is validated by consensus and committed to the canonical chain.
+
+---
+
 ## 4.2 The Ethereum Virtual Machine (EVM) & Gas Mechanics
 *(Appeared in: Dec 2023 Q3b [10M], May 2024 Q1a [5M], Dec 2024 Q4a [10M], May 2025 Q6a [10M])*
 
