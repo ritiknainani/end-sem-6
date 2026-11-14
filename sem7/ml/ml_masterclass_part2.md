@@ -48,6 +48,19 @@ A Support Vector Machine (Vapnik, 1995) is a maximum-margin linear or non-linear
 3. **Geometric Margin ($\gamma$):** The perpendicular distance between the positive margin ($w^T x + b = +1$) and negative margin ($w^T x + b = -1$):
    $$\gamma = \frac{(w^T x_+ + b) - (w^T x_- + b)}{\|w\|} = \frac{1 - (-1)}{\|w\|} = \mathbf{\frac{2}{\|w\|}}$$
 
+### 🌟 Significance of the Optimal Separating Hyperplane [5 Marks] — Nov'25 (Q1c)
+**Question:** *"What is the significance of optimal separating hyper plane in SVM?"*
+
+1. **Maximum Margin Guarantee ($\frac{2}{\|w\|} \to \max$):**
+   - Among the infinite possible hyperplanes that can linearly separate two classes, the optimal hyperplane is the **unique** plane that maximizes the minimum perpendicular distance to the closest training points of each class.
+2. **Minimization of Generalization Error (Vapnik-Chervonenkis Bound):**
+   - Statistical Learning Theory proves that the upper bound on expected risk $R(h) \le R_{\text{emp}}(h) + \mathcal{O}\left(\sqrt{\frac{h_{\text{VC}}}{N}}\right)$.
+   - Larger geometric margins directly minimize the **VC Dimension** ($h_{\text{VC}} \le \min\left(d, \frac{R^2}{\gamma^2}\right) + 1$). By maximizing $\gamma$, SVM minimizes model complexity and provably prevents overfitting.
+3. **Convex Quadratic Optimization (Zero Local Minima):**
+   - The formulation $\min \frac{1}{2}\|w\|^2$ subject to linear constraints forms a strictly convex objective function. It guarantees a **globally unique optimum**—unlike neural networks which trap in suboptimal local minima.
+4. **Sparsity & Noise Robustness (Support Vector Property):**
+   - The optimal plane depends solely on the small subset of boundary points (Support Vectors). Points lying outside the margins can be removed or perturbed without shifting the decision boundary, providing natural immunity against non-boundary noise.
+
 ---
 
 ## 4.2 SVM as a Constrained Optimization Problem (Primal to Dual Derivation)
@@ -135,6 +148,41 @@ A function $K(x, z)$ is a valid kernel if and only if for any finite set of poin
 
 ---
 
+### 🌟 Concrete Worked Example of the Kernel Trick [10 Marks] — Nov'25 (Q3a)
+> **Question:** *"Explain kernel functions of SVM along with an example."*
+
+#### 1. Problem: Non-Linear Separability in 2D Space ($\mathbb{R}^2$)
+Consider a 2D binary classification problem where positive points form a circular cluster centered at the origin, and negative points surround them in a concentric outer ring:
+- Positive class ($+1$): $x_1^2 + x_2^2 \le 1$
+- Negative class ($-1$): $x_1^2 + x_2^2 > 1$
+
+No straight 2D line ($w_1 x_1 + w_2 x_2 + b = 0$) can possibly separate these concentric rings!
+
+#### 2. Explicit Non-Linear Feature Mapping ($\phi: \mathbb{R}^2 \to \mathbb{R}^3$)
+Define a mapping function that projects each 2D vector $\vec{x} = (x_1, x_2)$ into a 3D feature space:
+$$\phi(\vec{x}) = \left( x_1^2, \; \sqrt{2}x_1 x_2, \; x_2^2 \right)^T \in \mathbb{R}^3$$
+
+Let $z_1 = x_1^2$, $z_2 = \sqrt{2}x_1 x_2$, $z_3 = x_2^2$. In this transformed 3D coordinate system, the circular decision boundary becomes a **flat 3D linear plane**:
+$$z_1 + z_3 = 1 \iff 1 \cdot z_1 + 0 \cdot z_2 + 1 \cdot z_3 - 1 = 0$$
+Which is easily separated by a linear SVM!
+
+#### 3. The Power of the Kernel Function ($K(\vec{x}, \vec{y})$):
+Calculating $\phi(\vec{x})$ and $\phi(\vec{y})$ explicitly and then taking their dot product in high-dimensional space requires heavy computational storage and arithmetic.
+Instead, evaluate the inner product directly using the **degree-2 homogeneous polynomial kernel**:
+$$K(\vec{x}, \vec{y}) = (\vec{x} \cdot \vec{y})^2 = (x_1 y_1 + x_2 y_2)^2$$
+
+Expand algebraically:
+$$K(\vec{x}, \vec{y}) = (x_1 y_1 + x_2 y_2)^2 = x_1^2 y_1^2 + 2(x_1 y_1)(x_2 y_2) + x_2^2 y_2^2$$
+
+Now compute the explicit 3D dot product $\phi(\vec{x}) \cdot \phi(\vec{y})$:
+$$\phi(\vec{x}) \cdot \phi(\vec{y}) = \begin{bmatrix} x_1^2 \\ \sqrt{2}x_1 x_2 \\ x_2^2 \end{bmatrix} \cdot \begin{bmatrix} y_1^2 \\ \sqrt{2}y_1 y_2 \\ y_2^2 \end{bmatrix} = x_1^2 y_1^2 + 2 x_1 x_2 y_1 y_2 + x_2^2 y_2^2$$
+
+$$\mathbf{K(\vec{x}, \vec{y}) \equiv \phi(\vec{x}) \cdot \phi(\vec{y})}$$
+
+> **Conclusion:** By using the kernel function $K(\vec{x}, \vec{y}) = (\vec{x}^T \vec{y})^2$, we compute the exact inner product in 3D feature space using **only 2D coordinates**, without ever storing or calculating the 3D transformed vectors!
+
+---
+
 ## 4.4 Multiclass Classification Strategies
 *(Appeared in: Dec 2022 Q3b [10M], May 2023 Q5a [10M], Dec 2023 Q6a [10M], May 2025 Q5a [10M])*
 
@@ -199,6 +247,11 @@ The fundamental mathematical prerequisite for clustering is measuring pairwise d
    - $p = \infty \implies$ Chebyshev Distance ($\max_i |x_i - y_i|$).
 4. **Cosine Distance (Angle between vectors, ignores magnitude):**
    $$d_{\text{Cosine}}(x, y) = 1 - \frac{x \cdot y}{\|x\| \|y\|} = 1 - \frac{\sum x_i y_i}{\sqrt{\sum x_i^2} \sqrt{\sum y_i^2}}$$
+5. **Mahalanobis Distance (Scale-Invariant & Covariance-Aware) [Nov'25 Q1a]:**
+   $$d_{\text{Mahalanobis}}(x, y) = \sqrt{(x - y)^T \Sigma^{-1} (x - y)}$$
+   - Where $\Sigma$ is the covariance matrix of the dataset.
+   - Unlike Euclidean distance which assumes spherical, un-correlated clusters, Mahalanobis distance accounts for statistical correlations and varying variances along different coordinate axes (ellipsoidal cluster contours).
+   - If features are completely uncorrelated with unit variance ($\Sigma = I$), Mahalanobis distance simplifies exactly to Euclidean distance.
 
 ---
 

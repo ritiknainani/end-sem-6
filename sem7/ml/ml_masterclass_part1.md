@@ -202,6 +202,102 @@ $$\mathbf{\mathbb{E}_{\mathcal{D}} \left[ (y - \hat{f}(x))^2 \right] = \underbra
 
 ---
 
+## 1.6 Five Prominent Real-World Applications of Machine Learning [10 Marks] — Nov'25 (Q2a)
+
+Machine Learning transforms high-dimensional empirical data into predictive statistical artifacts across diverse domains:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│               FIVE PROMINENT REAL-WORLD ML APPLICATIONS                │
+│                                                                        │
+│  1. HEALTHCARE & MEDICAL    2. FINANCIAL FRAUD & CREDIT  3. AUTONOMOUS │
+│     Tumor segmentation,        Transaction anomaly,         VEHICLES   │
+│     drug discovery             creditworthiness scoring    LiDAR, SLAM │
+│                                                                        │
+│  4. NATURAL LANGUAGE & RECS 5. CYBERSECURITY & SPAM                    │
+│     Collaborative filtering,   Malware detection, zero-day             │
+│     machine translation        packet inspection                       │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Healthcare & Predictive Medical Diagnosis:**
+   - **Task:** Diagnostic imaging (tumor segmentation on MRI/CT scans using CNNs) and disease prognosis.
+   - **Mechanism:** Supervised classification maps pixel intensities to malignant/benign probability scores, while survival analysis models predict patient mortality and ICU readmissions.
+   - **Impact:** Achieves clinical diagnostic sensitivity exceeding 95%, assisting radiologists in early oncology detection.
+2. **Financial Fraud Detection & Algorithmic Credit Scoring:**
+   - **Task:** Identifying fraudulent credit card transactions in sub-second real-time streams and predicting loan default probability.
+   - **Mechanism:** Anomaly detection (Isolation Forests, Autoencoders) and gradient boosted trees (XGBoost) evaluate transaction amount, velocity, geolocation drift, and merchant category codes.
+   - **Impact:** Prevents billions in unauthorized financial settlements while minimizing false transaction declines.
+3. **Autonomous Navigation & Self-Driving Vehicles:**
+   - **Task:** Real-time object detection (pedestrians, vehicles, traffic signals), semantic scene segmentation, and motion trajectory planning.
+   - **Mechanism:** Multi-modal sensor fusion combining camera streams, LiDAR point clouds, and radar data using Deep Reinforcement Learning and Convolutional Vision Transformers.
+   - **Impact:** Enables adaptive lane keeping, collision avoidance systems, and autonomous path tracking.
+4. **E-Commerce & Entertainment Recommendation Engines:**
+   - **Task:** Personalized product and content delivery on Amazon, Netflix, and Spotify.
+   - **Mechanism:** Hybrid recommender systems combining Matrix Factorization (Collaborative Filtering via SVD) and Deep Autoencoders with Content-Based feature embeddings (TF-IDF, word vectors).
+   - **Impact:** Drives over 35% of Amazon's purchase conversions and 75% of Netflix viewer watch-time.
+5. **Cybersecurity & Network Intrusion Detection (NIDS):**
+   - **Task:** Detecting zero-day malware variants, phishing attempts, and distributed denial of service (DDoS) botnets.
+   - **Mechanism:** Unsupervised clustering (DBSCAN, K-Means) flags aberrant packet traffic spikes, while recurrent neural networks (LSTMs) analyze sequence patterns in system API call logs.
+   - **Impact:** Protects enterprise network backbones by isolating infected endpoints before lateral attack propagation occurs.
+
+---
+
+## 1.7 Use Case: Email Spam Detection Pipeline & Model Selection [10 Marks] — Nov'25 (Q4b)
+
+**Question:** *"Consider the use case of Email spam detection. Identify and explain the suitable machine learning technique for this task."*
+
+### Architectural Pipeline
+```
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                   EMAIL SPAM DETECTION SYSTEM ARCHITECTURE                       │
+│                                                                                  │
+│  ┌────────────┐   Tokenize   ┌──────────────┐   TF-IDF /    ┌──────────────────┐ │
+│  │ Raw Email  │─────────────►│ Stop-words,  │──────────────►│ Sparse Feature   │ │
+│  │ Text Body  │              │ Stemming     │   Bag-of-Words│ Vector x in R^D  │ │
+│  └────────────┘              └──────────────┘               └────────┬─────────┘ │
+│                                                                      │           │
+│                                                                      ▼           │
+│  ┌────────────┐               Confidence / P(Spam|x)        ┌──────────────────┐ │
+│  │ Prediction │◄────────────────────────────────────────────┤ ML Classifier:   │ │
+│  │ Spam / Ham │   Threshold: P(Spam) > 0.90                 │ Multinomial NB / │ │
+│  └────────────┘   (Heavy penalty on False Positives!)       │ Linear SVM       │ │
+│                                                             └──────────────────┘ │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Step 1: Problem Formulation & Cost Asymmetry
+- **Type:** Supervised Binary Classification: $y \in \{0, 1\}$ where $1 = \text{Spam}$, $0 = \text{Ham (Legitimate)}$.
+- **Asymmetric Cost Matrix:** A **False Positive (Type I Error)**—classifying an important business contract as spam—is catastrophic. A **False Negative (Type II Error)**—letting a spam message reach the inbox—is merely a minor annoyance.
+- **Metric Requirement:** Extremely high **Precision** ($\frac{TP}{TP + FP} \approx 100\%$) and high decision threshold ($\tau \ge 0.90$).
+
+#### Step 2: Feature Engineering (NLP Extraction)
+1. **Text Normalization:** Lowercasing, HTML tag stripping, URL normalization (`http://...` $\to$ `TOKEN_URL`), dollar sign masking (`$10,000` $\to$ `TOKEN_MONEY`).
+2. **Tokenization & Stop-word Removal:** Elimination of non-discriminative syntax words ("is", "the", "and").
+3. **Stemming (Porter Stemmer):** Reducing inflected words to linguistic roots ("winning", "winner" $\to$ "win").
+4. **Vectorization:** Constructing a **TF-IDF sparse feature matrix** or Bag-of-Words vocabulary vector $\vec{x} \in \mathbb{R}^{|V|}$.
+
+#### Step 3: Comparative Model Selection
+
+| Candidate Model | Computational Cost | High-Dim Text Performance | Real-Time Latency | Verdict for Production |
+|---|---|---|---|---|
+| **K-Nearest Neighbors (KNN)** | $\mathcal{O}(N \cdot D)$ (Extremely Slow) | Fails due to Curse of Dimensionality | Very High (Unusable) | ❌ Rejected |
+| **Decision Trees (CART)** | Moderate | Prone to extreme overfitting on sparse text | Low | ❌ Rejected |
+| **Multinomial Naive Bayes (MNB)** | $\mathcal{O}(N \cdot D)$ (Ultra-Fast) | Exceptional on conditional word probabilities | Ultra-Low (< 5ms) | ✅ **Primary Choice (Baseline)** |
+| **Linear Support Vector Machine (SVM)** | Convex Quadratic Program | Optimal maximum-margin boundary in $\mathbb{R}^D$ | Low (< 10ms) | ✅ **Best Accuracy Choice** |
+
+#### Step 4: Mathematical Formulation of Primary Technique: Multinomial Naive Bayes
+Applying Bayes' Theorem under the conditional independence assumption:
+$$P(\text{Spam} \mid \vec{x}) = \frac{P(\text{Spam}) \prod_{j=1}^D P(w_j \mid \text{Spam})}{P(\vec{x})}$$
+
+With **Laplace Smoothing ($\alpha = 1$)** to avoid zero-probability multiplication for unseen vocabulary:
+$$\hat{P}(w_j \mid \text{Spam}) = \frac{N_{\text{spam}, w_j} + 1}{N_{\text{spam}} + |V|}$$
+
+Classification rule:
+$$\hat{y} = \begin{cases} 1 \text{ (Spam)} & \text{if } \ln P(\text{Spam}) + \sum_{j=1}^D \ln P(w_j \mid \text{Spam}) > \ln P(\text{Ham}) + \sum_{j=1}^D \ln P(w_j \mid \text{Ham}) + \tau \\ 0 \text{ (Ham)} & \text{otherwise} \end{cases}$$
+
+---
+
 ## MU Keyword Checklist: Module 1
 - [ ] *Tom Mitchell Definition: Task $T$, Performance $P$, Experience $E$*
 - [ ] *Supervised (Continuous Regression, Discrete Classification) vs Unsupervised (Clustering, Dim Reduction)*
@@ -441,6 +537,115 @@ $$\mathbf{\hat{y} = 39.28 + 10.60 x}$$
 
 ---
 
+## 2.4B SOLVED NUMERICAL 4: Month vs Organization Expenditure (Nov 2025) [10 Marks]
+*(Appeared in: November 2025 Paper, Question 2(b) [Paper Code 42171, 10 Marks])*
+
+### Problem Statement:
+Explain simple linear regression. Find regression line $Y = aX + C$ using least square method and estimate the expenditure of company in $6^{\text{th}}$ month using line as a model.
+The expenditure of an organization (in thousand) for every month is shown below:
+- **Month $X$:** $1, 2, 3, 4, 5$
+- **Expenditure $Y$ (in thousand):** $12, 19, 29, 37, 45$
+
+---
+
+### Step 1: Definition of Simple Linear Regression
+**Simple Linear Regression** models the linear relationship between a single independent continuous predictor variable $X$ (here, time in months) and a dependent continuous outcome variable $Y$ (here, expenditure in thousands):
+$$Y = aX + C + \epsilon$$
+Where:
+- $a$ is the regression slope (rate of change of expenditure per month).
+- $C$ is the $Y$-intercept (baseline expenditure at month 0).
+- $\epsilon$ is the random Gaussian noise/error term with $\mathbb{E}[\epsilon] = 0$.
+
+Under the **Ordinary Least Squares (OLS)** principle, parameters $a$ and $C$ are estimated by minimizing the sum of squared prediction errors $\sum_{i=1}^N (Y_i - (aX_i + C))^2$.
+
+---
+
+### Step 2: Construction of Least Squares Computation Table ($N = 5$)
+
+| Month ($X_i$) | Expenditure $Y_i$ (in \$K) | $X_i^2$ | $Y_i^2$ | $X_i Y_i$ |
+|:---:|:---:|:---:|:---:|:---:|
+| 1 | 12 | 1 | 144 | 12 |
+| 2 | 19 | 4 | 361 | 38 |
+| 3 | 29 | 9 | 841 | 87 |
+| 4 | 37 | 16 | 1369 | 148 |
+| 5 | 45 | 25 | 2025 | 225 |
+| **$\sum X = 15$** | **$\sum Y = 142$** | **$\sum X^2 = 55$** | **$\sum Y^2 = 4740$** | **$\sum XY = 510$** |
+
+---
+
+### Step 3: Mean Calculations
+$$\bar{X} = \frac{\sum X_i}{N} = \frac{15}{5} = \mathbf{3.0}$$
+$$\bar{Y} = \frac{\sum Y_i}{N} = \frac{142}{5} = \mathbf{28.4} \text{ thousand}$$
+
+---
+
+### Step 4: Calculate Slope ($a$) and Intercept ($C$)
+
+#### Formula for Slope $a$:
+$$a = \frac{N \sum X_i Y_i - \left(\sum X_i\right)\left(\sum Y_i\right)}{N \sum X_i^2 - \left(\sum X_i\right)^2}$$
+
+Substitute the computed summations:
+$$\text{Numerator} = 5(510) - (15)(142) = 2550 - 2130 = \mathbf{420}$$
+$$\text{Denominator} = 5(55) - (15)^2 = 275 - 225 = \mathbf{50}$$
+$$a = \frac{420}{50} = \mathbf{8.40}$$
+
+#### Formula for Intercept $C$:
+$$C = \bar{Y} - a\bar{X}$$
+$$C = 28.4 - (8.40 \times 3.0) = 28.4 - 25.2 = \mathbf{3.20}$$
+
+---
+
+### Step 5: Regression Equation Formulation
+The resulting ordinary least squares regression line is:
+$$\mathbf{\hat{Y} = 8.40 X + 3.20}$$
+
+---
+
+### Step 6: Expenditure Estimation for the $6^{\text{th}}$ Month ($X = 6$)
+Substitute $X = 6$ into the regression model:
+$$\hat{Y}_{X=6} = 8.40(6) + 3.20$$
+$$\hat{Y}_{X=6} = 50.40 + 3.20 = \mathbf{53.60} \text{ thousand}$$
+
+> [!IMPORTANT]
+> **Final Exam Conclusion:**
+> - The fitted regression line equation is: $\mathbf{Y = 8.4X + 3.2}$.
+> - The estimated expenditure for the company in the $6^{\text{th}}$ month is **$53.60$ thousand** (i.e., **₹53,600** or **\$53,600**).
+
+---
+
+### 🌟 Deep-Dive: Core Regression Terminology [5 Marks] — Nov'25 (Q1b)
+**Question:** *"Explain Regression line, Scatter plot, Error in prediction and Best fitting line."*
+
+```
+  Y (Expenditure)
+  ^
+  |                                        * (Actual Point: Y_i)
+  |                                      / |
+  |                                     /  | e_i = Error / Residual
+  |                                    /   v
+  |                                   /----+ (Predicted Point: \hat{Y}_i)
+  |                         *        /
+  |                                 /
+  |                      *         / <--- Best Fitting Regression Line: \hat{Y} = aX + C
+  |                               /
+  |                   *          /
+  |                             /
+  |        *                   /
+  |                           /
+  +--------------------------+---------------------------------> X (Month)
+```
+
+1. **Scatter Plot:** A 2D Cartesian visualization where each experimental data pair $(X_i, Y_i)$ is plotted as an individual coordinate point. It reveals whether the underlying relationship between variables is linear, non-linear, positive, negative, or uncorrelated.
+2. **Regression Line:** A straight mathematical line defined by $\hat{Y} = aX + C$ that captures the global directional trend of the dependent response $Y$ as a function of the independent predictor $X$.
+3. **Error in Prediction (Residual):** The vertical signed difference between the true observed response value $Y_i$ and the value $\hat{Y}_i$ predicted by the model:
+   $$e_i = Y_i - \hat{Y}_i = Y_i - (aX_i + C)$$
+   If $e_i > 0$, the model underestimated; if $e_i < 0$, the model overestimated.
+4. **Best Fitting Line:** The unique line among an infinite family of possible lines that **minimizes the Sum of Squared Errors (SSE)**:
+   $$\text{SSE} = \sum_{i=1}^N e_i^2 = \sum_{i=1}^N (Y_i - \hat{Y}_i)^2 \to \text{minimum}$$
+   Under OLS, the best fitting line is mathematically guaranteed to pass through the centroid $(\bar{X}, \bar{Y})$ and have zero mean residual error ($\sum e_i = 0$).
+
+---
+
 ## 2.5 Logistic Regression: Theory, Sigmoid Function & Log-Loss
 *(Appeared in: Dec 2022 Q1e [5M], May 2023 Q1e [5M], Dec 2023 Q1d [5M], Dec 2024 Q1c/Q2b [10M], May 2025 Q1e [5M])*
 
@@ -524,6 +729,55 @@ $$J(\theta) = -\frac{1}{m} \sum_{i=1}^m \left[ y^{(i)} \ln(h_\theta(x^{(i)})) + 
 7. **Receiver Operating Characteristic (ROC) & AUC:**
    - **ROC Curve:** Plots **TPR (Sensitivity)** on the Y-axis against **FPR ($1 - \text{Specificity}$)** on the X-axis across all classification decision thresholds $\tau \in [0, 1]$.
    - **Area Under Curve (AUC):** Represents the probability that the classifier ranks a randomly chosen positive instance higher than a randomly chosen negative instance. (Perfect classifier: $\text{AUC} = 1.0$; Random guess: $\text{AUC} = 0.5$).
+
+---
+
+### 🌟 SOLVED NUMERICAL: 50 Grant Proposals Evaluation [5 Marks] — Nov'25 (Q1d)
+> **MU Official Exam Question (Paper Code 42171, Q1d):**
+> *"Suppose that you were analysing data related to a group of 50 people applying for a grant. Each grant proposal was read by two readers and each reader either said 'Yes' or 'No' to the proposal. Calculate Precision, Recall, Accuracy.*
+> 
+> | | Reader B (Predicted) Yes | Reader B (Predicted) No |
+> |---|:---:|:---:|
+> | **Reader A (Actual) Yes** | 20 | 5 |
+> | **Reader A (Actual) No** | 10 | 15 |
+
+#### Step 1: Mapping to Confusion Matrix Elements
+- **Total Population ($N$):** $20 + 5 + 10 + 15 = 50$
+- **True Positives ($TP$):** Reader A said "Yes" and Reader B said "Yes" $\implies \mathbf{TP = 20}$
+- **False Negatives ($FN$):** Reader A said "Yes" but Reader B said "No" $\implies \mathbf{FN = 5}$ (Type II Error)
+- **False Positives ($FP$):** Reader A said "No" but Reader B said "Yes" $\implies \mathbf{FP = 10}$ (Type I Error)
+- **True Negatives ($TN$):** Reader A said "No" and Reader B said "No" $\implies \mathbf{TN = 15}$
+
+```
+                  +---------------------------+---------------------------+
+                  |  Reader B Predicted "Yes" |  Reader B Predicted "No"  |
++-----------------+---------------------------+---------------------------+
+| Actual "Yes"    |        TP = 20            |          FN = 5           | -> Total Actual Yes = 25
++-----------------+---------------------------+---------------------------+
+| Actual "No"     |        FP = 10            |          TN = 15          | -> Total Actual No = 25
++-----------------+---------------------------+---------------------------+
+                  | Total Predicted Yes = 30  | Total Predicted No = 20   | -> Grand Total = 50
+```
+
+#### Step 2: Step-by-Step Metric Computation
+
+1. **Accuracy:**
+   The proportion of all proposals correctly classified by Reader B:
+   $$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} = \frac{20 + 15}{50} = \frac{35}{50} = \mathbf{0.70} \quad \mathbf{(70.00\%)}$$
+
+2. **Precision:**
+   The fraction of proposals approved by Reader B that were actually legitimate grants (approved by Reader A):
+   $$\text{Precision} = \frac{TP}{TP + FP} = \frac{20}{20 + 10} = \frac{20}{30} = \frac{2}{3} \approx \mathbf{0.6667} \quad \mathbf{(66.67\%)}$$
+
+3. **Recall (Sensitivity):**
+   The fraction of actual grants approved by Reader A that Reader B successfully detected:
+   $$\text{Recall} = \frac{TP}{TP + FN} = \frac{20}{20 + 5} = \frac{20}{25} = \frac{4}{5} = \mathbf{0.8000} \quad \mathbf{(80.00\%)}$$
+
+4. **Additional Vital Examination Metrics:**
+   - **Specificity (True Negative Rate):**
+     $$\text{Specificity} = \frac{TN}{TN + FP} = \frac{15}{15 + 10} = \frac{15}{25} = \mathbf{0.6000} \quad (60.00\%)$$
+   - **F1-Score:**
+     $$\text{F1} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} = 2 \times \frac{0.6667 \times 0.8000}{0.6667 + 0.8000} = \frac{1.0667}{1.4667} \approx \mathbf{0.7273} \quad (72.73\%)$$
 
 ---
 
