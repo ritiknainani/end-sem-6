@@ -384,7 +384,105 @@ At least one bit is 0 → "DEFINITELY NOT IN SET" → TRUE NEGATIVE ✅
 | Check 6 | 6(1) | 5(1) | 4(1) | All 1 | **False Positive** |
 | Check 55 | 7(0) | — | — | Has 0 | **True Negative** |
 
-**MU Keyword Checklist:** Bloom filter, bit array, hash functions, false positive, true negative, never false negative, probabilistic, space-efficient, membership testing
+---
+
+### 🌟 Solved Numerical (Nov 2025 — Official Exam Paper with MU Corrections) [10 Marks]
+> **MU Official Exam Question (Paper Code 42172, Q3a):**
+> *"Discuss Blooms filter in detail and insert elements 10 and 7 in Blooms filter of size 5 using following hash functions: 1) $h_1(x) = x \pmod 5$  2) $h_2(x) = (2x + 6) \pmod 5$."*
+
+**Given:**
+- Bit Array Size: $m = 5$ (Indices: 0, 1, 2, 3, 4)
+- Number of Hash Functions: $k = 2$
+- Hash Functions:
+  1. $h_1(x) = x \pmod 5$
+  2. $h_2(x) = (2x + 6) \pmod 5$
+- Elements to Insert: $10$ and $7$
+
+#### Step 1: Initialize Bit Array
+All $m = 5$ bit positions are initialized to `0`.
+```
+Position: [0]  [1]  [2]  [3]  [4]
+Value:     0    0    0    0    0
+```
+
+#### Step 2: Insert Element $x = 10$
+Compute the hash values:
+- $h_1(10) = 10 \pmod 5 = \mathbf{0}$
+- $h_2(10) = (2 \times 10 + 6) \pmod 5 = (20 + 6) \pmod 5 = 26 \pmod 5 = \mathbf{1}$
+
+Set bit positions $0$ and $1$ to `1`:
+```
+Operation: Set bit[0] = 1, bit[1] = 1
+Position: [0]  [1]  [2]  [3]  [4]
+Value:     1    1    0    0    0
+```
+
+#### Step 3: Insert Element $x = 7$
+Compute the hash values:
+- $h_1(7) = 7 \pmod 5 = \mathbf{2}$
+- $h_2(7) = (2 \times 7 + 6) \pmod 5 = (14 + 6) \pmod 5 = 20 \pmod 5 = \mathbf{0}$
+
+Set bit positions $2$ and $0$ to `1` (Note: bit position $0$ is already `1` from $x = 10$):
+```
+Operation: Set bit[2] = 1, bit[0] = 1 (already 1)
+Position: [0]  [1]  [2]  [3]  [4]
+Value:     1    1    1    0    0
+```
+
+#### Final Bit Array State After All Insertions:
+$$\text{Bit Array } B = [1, 1, 1, 0, 0]$$
+- **Occupied bit positions:** $\{0, 1, 2\}$ (Fraction of 1s = $3/5 = 60\%$)
+- **Empty bit positions:** $\{3, 4\}$
+
+#### Step 4: Membership Testing & Verification of Queries
+1. **Query $x = 10$ (Inserted item):**
+   - $h_1(10) = 0 \to B[0] = 1$ ✅
+   - $h_2(10) = 1 \to B[1] = 1$ ✅
+   - **Conclusion:** Both bits are 1 $\implies$ **"Probably Present" (True Positive)**.
+2. **Query $x = 7$ (Inserted item):**
+   - $h_1(7) = 2 \to B[2] = 1$ ✅
+   - $h_2(7) = 0 \to B[0] = 1$ ✅
+   - **Conclusion:** Both bits are 1 $\implies$ **"Probably Present" (True Positive)**.
+3. **Query $x = 3$ (Uninserted item):**
+   - $h_1(3) = 3 \pmod 5 = 3 \to B[3] = \mathbf{0}$ ❌
+   - **Conclusion:** Since $B[3] = 0$, $x = 3$ was **definitely never inserted** $\implies$ **"Definitely NOT in Set" (True Negative)**.
+4. **Query $x = 5$ (Uninserted item demonstrating Collision):**
+   - $h_1(5) = 5 \pmod 5 = 0 \to B[0] = 1$ ✅
+   - $h_2(5) = (2 \times 5 + 6) \pmod 5 = 16 \pmod 5 = 1 \to B[1] = 1$ ✅
+   - **Conclusion:** Both $B[0]$ and $B[1]$ are set, even though 5 was **never inserted**! $\implies$ **"Probably Present" (FALSE POSITIVE)**.
+
+---
+
+### 🎯 Why Recall is 100% for Bloom Filter [5 Marks] — Nov'25 (Q1d)
+
+**Question:** *"Why recall is 100% for blooms filter, explain in detail."*
+
+#### 1. Mathematical Proof:
+In classification and information retrieval, **Recall** (Sensitivity) is defined as:
+$$\text{Recall} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}$$
+
+For a Bloom Filter to achieve a recall of less than 100%, there must exist at least one **False Negative** ($\text{FN} > 0$).
+A **False Negative** means:
+> An element $x$ was previously inserted into the set $S$, but when queried, the Bloom filter incorrectly asserts that $x \notin S$ ("Definitely NOT in set").
+
+#### 2. Why False Negatives Are Strictly Impossible ($\text{FN} = 0$):
+1. **Deterministic Hashing:** The $k$ hash functions $h_1, h_2, \dots, h_k$ are completely deterministic. For any input $x$, $h_i(x)$ will always produce the identical position index $p_i$.
+2. **Monotonic Bit Updates (Write-Only `1`s):** During `INSERT(x)`, every bit at index $h_i(x)$ is explicitly set to `1`:
+   $$B[h_i(x)] \leftarrow 1 \quad \forall i \in \{1, 2, \dots, k\}$$
+3. **No Bit Reset / No Eviction:** Standard Bloom Filters do **not** support deletions. Bits in the filter are never cleared or reset back to `0`. Once a bit transitions from `0` to `1`, it remains `1` forever.
+4. **Lookup Condition:** A lookup operation returns "Definitely NOT in set" **if and only if** at least one bit $B[h_i(x)] == 0$.
+5. **Conclusion:** If $x$ was inserted, every bit $B[h_i(x)]$ was set to `1` and could never have been set back to `0`. Therefore, a lookup on an inserted element can **never** encounter a `0` bit:
+   $$P(\text{False Negative}) = 0 \implies \text{FN} = 0$$
+
+Substituting $\text{FN} = 0$ into the Recall equation:
+$$\text{Recall} = \frac{\text{TP}}{\text{TP} + 0} = \frac{\text{TP}}{\text{TP}} = 1.00 = \mathbf{100\%}$$
+
+#### 3. Trade-off: Precision vs Recall:
+- **Recall = 100%:** Guaranteed zero misses. If an item exists, the filter will NEVER miss it.
+- **Precision < 100%:** Because multiple keys can map to the same bit positions (hash collisions), uninserted elements can accidentally find all their corresponding bits set to `1`, causing **False Positives** ($\text{FP} > 0$).
+$$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}} < 100\%$$
+
+**MU Keyword Checklist:** Bloom filter, bit array, hash functions, false positive, true negative, never false negative, probabilistic, space-efficient, membership testing, 100% recall proof, TP/(TP+FN), deterministic hashing.
 
 ---
 
@@ -554,6 +652,69 @@ All elements are distinct. Count = 8.
 **Estimated distinct elements = 2³ = 8**
 
 **Actual = 8** ✅ Exact match!
+
+---
+
+### ✅ SOLVED EXAMPLE 7 (Nov 2025 — Official Paper with MU Corrections) [10 Marks]
+> **MU Official Exam Question (Paper Code 42172, Q5a):**
+> *"Suppose our stream consists of the integers 3, 1, 4, 1, 5, 9, 2, 6, 5. Determine the number of distinct elements if the hash function is: $h(x) = (3x + 7) \pmod 8$, treat the result as a 5-bit binary integer."*
+
+#### Step 1: Identify Stream and Distinct Elements
+- **Stream:** $S = [3, 1, 4, 1, 5, 9, 2, 6, 5]$ (Length $N = 9$)
+- **Distinct Elements:** The set of unique values is $\{1, 2, 3, 4, 5, 6, 9\}$ $\implies \mathbf{7 \text{ actual distinct elements}}$.
+- **Hash function:** $h(x) = (3x + 7) \pmod 8$
+- **Format:** Represent hash output as a **5-bit binary integer** (e.g., $0 \to 00000_2$, $5 \to 00101_2$).
+
+#### Step 2: Compute Hash Values, 5-bit Binary Representation, and Trailing Zeros $r(x)$
+
+| Stream Element ($x$) | Arithmetic: $(3x + 7)$ | $h(x) = (3x+7) \pmod 8$ | 5-Bit Binary | Trailing Zeros $r(x)$ | Calculation Detail |
+|:---:|:---:|:---:|:---:|:---:|:---|
+| **3** | $3(3) + 7 = 16$ | $16 \pmod 8 = \mathbf{0}$ | **00000** | **5** | All 5 bits are zero; full 5-bit trailing zero string |
+| **1** | $3(1) + 7 = 10$ | $10 \pmod 8 = \mathbf{2}$ | **00010** | **1** | Ends in `...10` $\to$ 1 trailing zero |
+| **4** | $3(4) + 7 = 19$ | $19 \pmod 8 = \mathbf{3}$ | **00011** | **0** | Ends in `...1` $\to$ 0 trailing zeros |
+| 1 | Duplicate (already hashed) | — | — | — | Skip redundant evaluation |
+| **5** | $3(5) + 7 = 22$ | $22 \pmod 8 = \mathbf{6}$ | **00110** | **1** | Ends in `...10` $\to$ 1 trailing zero |
+| **9** | $3(9) + 7 = 34$ | $34 \pmod 8 = \mathbf{2}$ | **00010** | **1** | Ends in `...10` $\to$ 1 trailing zero |
+| **2** | $3(2) + 7 = 13$ | $13 \pmod 8 = \mathbf{5}$ | **00101** | **0** | Ends in `...1` $\to$ 0 trailing zeros |
+| **6** | $3(6) + 7 = 25$ | $25 \pmod 8 = \mathbf{1}$ | **00001** | **0** | Ends in `...1` $\to$ 0 trailing zeros |
+| 5 | Duplicate (already hashed) | — | — | — | Skip redundant evaluation |
+
+#### Step 3: Determine Maximum Trailing Zeros ($R$)
+$$R = \max_{x \in S} \{r(x)\} = \max \{5, 1, 0, 1, 1, 0, 0\} = \mathbf{5}$$
+
+#### Step 4: Compute Flajolet-Martin Distinct Count Estimate
+$$\text{Estimated Distinct Elements} = 2^R = 2^5 = \mathbf{32}$$
+
+> [!NOTE]
+> **Technical Examination Analysis & Academic Justification:**
+> - **Actual Distinct Count:** $7$
+> - **Basic FM Estimate:** $2^5 = 32$
+> - **Standard Flajolet-Martin Correction Factor:**
+>   The theoretical FM unbiased estimator applies constant $\phi \approx 0.77351$:
+>   $$\text{Estimate}_{\text{corrected}} = \frac{2^R}{\phi} = \frac{32}{0.77351} \approx 41.37$$
+> - **Why the Discrepancy Occurs:**
+>   1. **Boundary Condition on Modulo 8:** Modulo 8 only yields numbers $0 \le y \le 7$. When $h(3) = 16 \pmod 8 = 0$, representing zero as a 5-bit integer (`00000`) creates an artificial tail of 5 trailing zeros.
+>   2. **Small Stream Size:** Flajolet-Martin is designed for massive streams with millions of elements. On very small streams ($N = 9$) using a single hash function, stochastic variance is naturally high. In production systems (like HyperLogLog), stochastic averaging across $m = 2^p$ registers is mandatory to suppress variance.
+
+---
+
+### 🌟 Distinct Elements in Data Streams: Algorithm & Real-World Applications [5 Marks] — Nov'25 (Q1b)
+
+**Question:** *"Which algorithm can be used for finding distinct elements in a long data stream? Give two real life applications for the same."*
+
+#### 1. Algorithm: Flajolet-Martin (FM) Algorithm / HyperLogLog (HLL)
+The **Flajolet-Martin algorithm** (and its modern derivative **HyperLogLog**) is the industry-standard probabilistic algorithm used to count unique elements (cardinality estimation) in an unbounded data stream using strictly logarithmic space:
+$$\mathcal{O}(\log(\log N)) \text{ space compared to } \mathcal{O}(N) \text{ required by a Hash Set}$$
+
+#### 2. Two Real-Life Industrial Applications:
+
+##### Application 1: Unique Website Visitors / Daily Active Users (DAU) at Scale
+- **Problem:** Tech giants like Google, Meta, and Netflix process billions of web access logs per second. Storing every unique user ID or IP address in a distributed hash table consumes tens of gigabytes of RAM per hour and introduces massive network synchronization latency.
+- **Solution:** A stream of incoming request logs is routed through a Flajolet-Martin / HyperLogLog estimator. By maintaining only tiny register arrays (a few kilobytes), the analytics infrastructure continuously computes real-time unique active users (DAU/MAU) with less than 1% relative standard error.
+
+##### Application 2: Network Intrusion Detection & DDoS Attack Mitigation
+- **Problem:** High-speed internet backbone routers (Cisco, Juniper) monitor millions of concurrent network packets. A Denial of Service (DDoS) attack or network port scan is characterized by a malicious IP scanning thousands of distinct destination IP addresses or port numbers in milliseconds.
+- **Solution:** Routers execute Flajolet-Martin cardinality counting on incoming TCP SYN packets grouped by source IP. If the estimated number of distinct destination ports or destination IP addresses for a single source IP spikes exponentially beyond a defined threshold within a sliding window, the router immediately flags an active DDoS/port-scanning attack and drops the traffic at wire speed.
 
 ---
 

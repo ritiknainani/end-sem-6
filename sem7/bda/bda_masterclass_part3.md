@@ -75,6 +75,53 @@ Recommendation: "John Wick" (highest similarity to user profile)
 
 ---
 
+### 🌟 Deep-Dive: TF and IDF in Content-Based Filtering [5 Marks] — Nov'25 (Q1c)
+
+**Question:** *"Describe terms TF and IDF with respect to content based filtering."*
+
+#### 1. Context in Recommender Systems
+In **Content-Based Filtering**, items are represented by textual descriptions (e.g., movie plots, book summaries, product specifications). To convert free-form text documents into structured numerical vectors for mathematical matching, the **Vector Space Model (VSM)** utilizes **TF-IDF (Term Frequency – Inverse Document Frequency)** weighting.
+
+```
+Raw Text: "Batman fights crime in Gotham city"
+   │
+   ▼ [Tokenize & Stop-word removal]
+Vocabulary: {"batman", "crime", "gotham", "city"}
+   │
+   ▼ [Compute TF and IDF weights]
+Item Feature Vector: [TF-IDF("batman"), TF-IDF("crime"), TF-IDF("gotham"), ...]
+   │
+   ▼ [Cosine Similarity against User Profile]
+Predicted Preference Score
+```
+
+#### 2. Term Frequency (TF): Local Importance
+- **Definition:** Measures how frequently a specific term $t$ appears within a given document or item description $d$.
+- **Intuition:** The more times a keyword appears in a movie's plot, the more central that theme is to the movie.
+- **Formula (Normalized):**
+  $$\text{TF}(t, d) = \frac{f_{t, d}}{\sum_{t' \in d} f_{t', d}} \quad \text{or} \quad \text{TF}(t, d) = \frac{f_{t, d}}{\max_{t'} f_{t', d}}$$
+  Where $f_{t, d}$ is the raw count of term $t$ in document $d$. Normalization prevents bias toward artificially long documents.
+
+#### 3. Inverse Document Frequency (IDF): Global Discriminative Power
+- **Definition:** Measures how rare or common a term is across the **entire catalog of $N$ items**.
+- **Intuition:** Words that appear in nearly *every* movie synopsis (like "film", "story", "actor", "world") carry virtually zero discriminative power for recommendations. Conversely, rare domain terms (like "quantum", "vampire", "cyberpunk") carry massive information content.
+- **Formula:**
+  $$\text{IDF}(t, D) = \log_{10} \left( \frac{N}{|\{d \in D : t \in d\}|} \right)$$
+  Where:
+  - $N = |D|$ is the total number of documents (items) in the database.
+  - $|\{d \in D : t \in d\}|$ is the document frequency ($\text{DF}_t$), i.e., number of items containing term $t$.
+  - If a word appears in all items ($\text{DF} = N$), $\text{IDF} = \log(1) = 0$ (completely discounted).
+
+#### 4. Composite TF-IDF Weight & Vector Matching:
+$$\text{TF-IDF}(t, d, D) = \text{TF}(t, d) \times \text{IDF}(t, D)$$
+
+- **Item Profile Vector:** $\vec{V}_{\text{item}} = \left[ w_{1}, w_{2}, \dots, w_{|V|} \right]$ where $w_i = \text{TF-IDF}(t_i, \text{item})$.
+- **User Profile Vector:** $\vec{U}_{\text{user}} = \frac{1}{|L|} \sum_{i \in \text{Liked}} \vec{V}_i$ (average vector of items user liked).
+- **Matching Function (Cosine Similarity):**
+  $$\text{Sim}(\vec{U}, \vec{V}) = \cos(\theta) = \frac{\vec{U} \cdot \vec{V}}{\|\vec{U}\| \|\vec{V}\|} = \frac{\sum_{k} U_k \cdot V_k}{\sqrt{\sum_k U_k^2} \sqrt{\sum_k V_k^2}}$$
+
+---
+
 ## Q22. Explain Collaborative Filtering in Recommendation Systems. [10 Marks] — 2/6
 
 **Question Type:** Theory
@@ -139,6 +186,120 @@ User-Based CF for User A (predicting Tablet rating):
 | **Example** | Netflix suggesting similar genre movies | Amazon "Customers who bought X also bought Y" |
 
 **MU Keyword Checklist:** Collaborative filtering, user-based, item-based, user-item matrix, cosine similarity, Pearson correlation, cold-start problem, serendipity, sparsity problem
+
+---
+
+### 🌟 Solved Numerical: Predict Rating using Pearson's Correlation Coefficient [10 Marks] — Nov'25 (Q4a)
+
+> **MU Official Exam Question (Paper Code 42172, Q4a):**
+> *"Predict rating of user 2 for Movie 3 using Pearson's Correlation coefficient."*
+
+#### Given User-Movie Rating Matrix:
+| Users | Movie 1 ($M_1$) | Movie 2 ($M_2$) | Movie 3 ($M_3$) | Movie 4 ($M_4$) | Movie 5 ($M_5$) |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **User 1 ($U_1$)** | 2 | 3 | 2 | 1 | 1 |
+| **User 2 ($U_2$)** | 3 | 4 | **?** | 4 | 3 |
+| **User 3 ($U_3$)** | 4 | 3 | 4 | 3 | 3 |
+
+**Target Task:** Estimate the missing rating $\hat{r}_{2, 3}$ (User 2's rating for Movie 3).
+
+---
+
+#### Step 1: Identify Co-Rated Items and Calculate User Mean Ratings
+To compute Pearson's correlation coefficient between User 2 ($U_2$) and the other users ($U_1, U_3$), we consider only the subset of movies mutually rated by both users.
+- User 2 has rated: $\{M_1, M_2, M_4, M_5\}$ ($M_3$ is missing).
+- Therefore, the co-rated set of items between $U_2$ and $U_1$ as well as between $U_2$ and $U_3$ is:
+  $$I_{\text{common}} = \{M_1, M_2, M_4, M_5\} \quad (N = 4 \text{ items})$$
+
+Now calculate the mean ratings over these 4 co-rated items:
+$$\bar{r}_{u} = \frac{1}{|I_{\text{common}}|} \sum_{i \in I_{\text{common}}} r_{u, i}$$
+
+1. **User 2 Mean Rating ($\bar{r}_2$):**
+   $$\bar{r}_2 = \frac{3 + 4 + 4 + 3}{4} = \frac{14}{4} = \mathbf{3.50}$$
+
+2. **User 1 Mean Rating on Co-Rated Items ($\bar{r}_1$):**
+   $$\bar{r}_1 = \frac{2 + 3 + 1 + 1}{4} = \frac{7}{4} = \mathbf{1.75}$$
+   *(Note: Full mean including $M_3$ is $\frac{2+3+2+1+1}{5} = 1.80$. In rigorous Pearson collaborative filtering, standard formulation computes user means across the intersection of mutually rated items $I_{uv}$.)*
+
+3. **User 3 Mean Rating on Co-Rated Items ($\bar{r}_3$):**
+   $$\bar{r}_3 = \frac{4 + 3 + 3 + 3}{4} = \frac{13}{4} = \mathbf{3.25}$$
+
+---
+
+#### Step 2: Compute Pearson Correlation Coefficients ($sim(U_2, U_1)$ and $sim(U_2, U_3)$)
+
+The standard **Pearson Correlation Coefficient** formula is:
+$$\text{sim}(u, v) = \frac{\sum_{i \in I_{uv}} (r_{u, i} - \bar{r}_u)(r_{v, i} - \bar{r}_v)}{\sqrt{\sum_{i \in I_{uv}} (r_{u, i} - \bar{r}_u)^2} \cdot \sqrt{\sum_{i \in I_{uv}} (r_{v, i} - \bar{r}_v)^2}}$$
+
+##### (A) Correlation between User 2 and User 1 ($\text{sim}(U_2, U_1)$):
+
+| Movie ($i$) | $r_{2, i}$ | $(r_{2, i} - \bar{r}_2)$ | $(r_{2, i} - \bar{r}_2)^2$ | $r_{1, i}$ | $(r_{1, i} - \bar{r}_1)$ | $(r_{1, i} - \bar{r}_1)^2$ | Product $(r_{2, i} - \bar{r}_2)(r_{1, i} - \bar{r}_1)$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| $M_1$ | 3 | $3 - 3.5 = -0.5$ | $0.25$ | 2 | $2 - 1.75 = +0.25$ | $0.0625$ | $(-0.5)(0.25) = \mathbf{-0.125}$ |
+| $M_2$ | 4 | $4 - 3.5 = +0.5$ | $0.25$ | 3 | $3 - 1.75 = +1.25$ | $1.5625$ | $(0.5)(1.25) = \mathbf{+0.625}$ |
+| $M_4$ | 4 | $4 - 3.5 = +0.5$ | $0.25$ | 1 | $1 - 1.75 = -0.75$ | $0.5625$ | $(0.5)(-0.75) = \mathbf{-0.375}$ |
+| $M_5$ | 3 | $3 - 3.5 = -0.5$ | $0.25$ | 1 | $1 - 1.75 = -0.75$ | $0.5625$ | $(-0.5)(-0.75) = \mathbf{+0.375}$ |
+| **Sum** | — | — | **$\sum = 1.00$** | — | — | **$\sum = 2.75$** | **$\sum = \mathbf{+0.50}$** |
+
+- **Numerator:** $\sum = -0.125 + 0.625 - 0.375 + 0.375 = \mathbf{0.50}$
+- **Denominator:**
+  $$\sqrt{\sum (r_{2, i} - \bar{r}_2)^2} = \sqrt{1.00} = 1.00$$
+  $$\sqrt{\sum (r_{1, i} - \bar{r}_1)^2} = \sqrt{2.75} \approx 1.6583$$
+  $$\text{Denominator} = 1.00 \times 1.6583 = 1.6583$$
+- **Similarity Value:**
+  $$\text{sim}(U_2, U_1) = \frac{0.50}{1.6583} \approx \mathbf{+0.3015}$$
+
+---
+
+##### (B) Correlation between User 2 and User 3 ($\text{sim}(U_2, U_3)$):
+
+| Movie ($i$) | $r_{2, i}$ | $(r_{2, i} - \bar{r}_2)$ | $(r_{2, i} - \bar{r}_2)^2$ | $r_{3, i}$ | $(r_{3, i} - \bar{r}_3)$ | $(r_{3, i} - \bar{r}_3)^2$ | Product $(r_{2, i} - \bar{r}_2)(r_{3, i} - \bar{r}_3)$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| $M_1$ | 3 | $3 - 3.5 = -0.5$ | $0.25$ | 4 | $4 - 3.25 = +0.75$ | $0.5625$ | $(-0.5)(0.75) = \mathbf{-0.375}$ |
+| $M_2$ | 4 | $4 - 3.5 = +0.5$ | $0.25$ | 3 | $3 - 3.25 = -0.25$ | $0.0625$ | $(0.5)(-0.25) = \mathbf{-0.125}$ |
+| $M_4$ | 4 | $4 - 3.5 = +0.5$ | $0.25$ | 3 | $3 - 3.25 = -0.25$ | $0.0625$ | $(0.5)(-0.25) = \mathbf{-0.125}$ |
+| $M_5$ | 3 | $3 - 3.5 = -0.5$ | $0.25$ | 3 | $3 - 3.25 = -0.25$ | $0.0625$ | $(-0.5)(-0.25) = \mathbf{+0.125}$ |
+| **Sum** | — | — | **$\sum = 1.00$** | — | — | **$\sum = 0.75$** | **$\sum = \mathbf{-0.50}$** |
+
+- **Numerator:** $\sum = -0.375 - 0.125 - 0.125 + 0.125 = \mathbf{-0.50}$
+- **Denominator:**
+  $$\sqrt{\sum (r_{2, i} - \bar{r}_2)^2} = \sqrt{1.00} = 1.00$$
+  $$\sqrt{\sum (r_{3, i} - \bar{r}_3)^2} = \sqrt{0.75} \approx 0.8660$$
+  $$\text{Denominator} = 1.00 \times 0.8660 = 0.8660$$
+- **Similarity Value:**
+  $$\text{sim}(U_2, U_3) = \frac{-0.50}{0.8660} \approx \mathbf{-0.5774}$$
+
+---
+
+#### Step 3: Predict Rating $\hat{r}_{2, 3}$ using Resnick's Collaborative Filtering Formula
+Using the standard deviation-from-mean weighted aggregation formula:
+$$\hat{r}_{u, j} = \bar{r}_u + \frac{\sum_{v \in N} \text{sim}(u, v) \cdot (r_{v, j} - \bar{r}_v)}{\sum_{v \in N} |\text{sim}(u, v)|}$$
+
+Where:
+- Target user mean: $\bar{r}_2 = 3.50$
+- Ratings for Movie 3 by neighbors:
+  - User 1 rated $M_3$: $r_{1, 3} = 2 \implies (r_{1, 3} - \bar{r}_1) = 2 - 1.75 = \mathbf{+0.25}$
+  - User 3 rated $M_3$: $r_{3, 3} = 4 \implies (r_{3, 3} - \bar{r}_3) = 4 - 3.25 = \mathbf{+0.75}$
+
+##### Numerator Calculation:
+$$\sum = \left[ \text{sim}(U_2, U_1) \times (r_{1, 3} - \bar{r}_1) \right] + \left[ \text{sim}(U_2, U_3) \times (r_{3, 3} - \bar{r}_3) \right]$$
+$$\sum = \left( 0.3015 \times 0.25 \right) + \left( -0.5774 \times 0.75 \right)$$
+$$\sum = 0.07538 - 0.43305 = \mathbf{-0.35767}$$
+
+##### Denominator Calculation:
+$$\sum |\text{sim}(u, v)| = |0.3015| + |-0.5774| = 0.3015 + 0.5774 = \mathbf{0.8789}$$
+
+##### Weighted Deviation:
+$$\Delta = \frac{-0.35767}{0.8789} \approx \mathbf{-0.4069}$$
+
+##### Final Predicted Rating:
+$$\hat{r}_{2, 3} = \bar{r}_2 + \Delta = 3.50 + (-0.4069) = \mathbf{3.0931} \approx \mathbf{3.09}$$
+
+> [!TIP]
+> **Summary Answer for Examiner:**
+> - $\text{sim}(U_2, U_1) = +0.3015$ (Weak positive agreement)
+> - $\text{sim}(U_2, U_3) = -0.5774$ (Moderate negative agreement / opposing tastes)
+> - **Predicted Rating of User 2 for Movie 3 ($\hat{r}_{2,3}$):** $\mathbf{3.09} \approx \mathbf{3}$ (on a 1-5 rating scale).
 
 ---
 
@@ -659,50 +820,127 @@ table(f)        # Frequency table
 
 ---
 
-## Q29. Explain Data Visualization: Types and Applications. [10 Marks] — May'24
+## Q29. Explain Data Visualization Techniques in R with Examples. [10 Marks] — May'24, Nov'25 (Q6b)
 
-**Question Type:** Theory
+**Question Type:** Theory & Practical Code
 
 ### Definition
-**Data Visualization** is the graphical representation of data and information using visual elements like charts, graphs, and maps to identify patterns, trends, and outliers.
+**Data Visualization** in Big Data Analytics is the graphical representation of raw and processed datasets using visual elements such as charts, graphs, plots, and maps. In R, data visualization allows analysts to quickly communicate trends, identify statistical distributions, observe multi-dimensional correlations, and isolate anomalous outliers that are impossible to discern in raw tabular data.
 
-### Types of Visualizations:
+### Six Core Visualization Techniques in R:
 
-| Type | R Function | Best For |
-|------|-----------|----------|
-| **Bar Chart** | `barplot()` | Comparing categories |
-| **Histogram** | `hist()` | Distribution of continuous data |
-| **Pie Chart** | `pie()` | Proportions/composition |
-| **Line Chart** | `plot(type="l")` | Trends over time |
-| **Scatter Plot** | `plot()` | Relationship between 2 variables |
-| **Box Plot** | `boxplot()` | Distribution, quartiles, outliers |
-| **Heatmap** | `heatmap()` | Matrix data, correlation |
-
-### Applications:
-1. **Business Analytics:** Sales dashboards, revenue trends, KPI monitoring
-2. **Healthcare:** Disease spread maps (COVID dashboards), patient vitals monitoring
-3. **Finance:** Stock price charts, portfolio allocation pie charts
-4. **Social Media:** Engagement metrics, trending topic word clouds
-5. **Scientific Research:** Genome visualization, climate change plots
-
-### R Plotting Examples:
-```r
-# Bar chart
-barplot(c(20, 35, 30, 15), names.arg = c("Q1","Q2","Q3","Q4"),
-        main = "Quarterly Sales", col = "blue")
-
-# Histogram
-hist(rnorm(100), main = "Normal Distribution", col = "green")
-
-# Scatter plot
-plot(x = c(1,2,3,4,5), y = c(2,4,5,4,6),
-     main = "X vs Y", xlab = "X", ylab = "Y", pch = 19)
-
-# Box plot
-boxplot(mtcars$mpg ~ mtcars$cyl, main = "MPG by Cylinders")
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   DATA VISUALIZATION TECHNIQUES IN R                   │
+│                                                                        │
+│  1. BAR PLOT              2. HISTOGRAM              3. SCATTER PLOT    │
+│     barplot()                hist()                    plot()          │
+│     Categorical comparisons  Frequency distribution    Bivariate trend │
+│     ┌─┐   ┌─┐                ┌───┬───┬───┐             │   *   *       │
+│     │ │ ┌─┤ │                │   │   │   │             │ *   *         │
+│     ┴─┴─┴─┴─┴                └───┴───┴───┘             └────────       │
+│                                                                        │
+│  4. BOX PLOT              5. PIE CHART              6. HEATMAP         │
+│     boxplot()                pie()                     heatmap()       │
+│     5-number summary         Proportional shares       2D Matrix grid  │
+│     ──┬──                    ┌───┐                     ┌───┬───┐       │
+│      ┌┴┐                     │ \ │                     │▓▓▓│░░░│       │
+│      └┬┘                     └───┘                     └───┴───┘       │
+│     ──┴──                                                              │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-**MU Keyword Checklist:** barplot, hist, pie, plot, boxplot, heatmap, scatter, line chart, trends, patterns, outliers, dashboard, visualization types
+| Technique | R Base Function | Primary Analytical Purpose | When to Use (Exam Context) |
+|---|---|---|---|
+| **Bar Plot** | `barplot()` | Comparing discrete category magnitudes | Quarterly sales, branch revenues |
+| **Histogram** | `hist()` | Visualizing continuous probability distributions | Server latency distribution, user age spread |
+| **Scatter Plot** | `plot(x, y)` | Assessing correlation between two numeric variables | Advertising spend vs product revenue |
+| **Box Plot (Whisker)** | `boxplot()` | Five-number summary (Min, Q1, Median, Q3, Max) & outliers | Salary dispersion across job departments |
+| **Line Chart** | `plot(type="l")` | Sequential and time-series trends | Real-time stock prices, hourly website traffic |
+| **Heatmap** | `heatmap()` | Visualizing 2D matrix correlations with color intensity | User-movie rating density, feature correlation |
+
+---
+
+### Complete Exam-Ready R Implementation Examples:
+
+```r
+# ==============================================================================
+# 1. BAR PLOT: Discrete Categorical Comparison
+# ==============================================================================
+revenue <- c(45, 60, 35, 80)
+quarters <- c("Q1", "Q2", "Q3", "Q4")
+barplot(revenue, 
+        names.arg = quarters, 
+        main = "Quarterly Revenue (in Millions)", 
+        xlab = "Fiscal Quarter", 
+        ylab = "Revenue ($M)", 
+        col = c("coral", "steelblue", "gold", "forestgreen"), 
+        border = "black")
+
+# ==============================================================================
+# 2. HISTOGRAM: Frequency Distribution of Continuous Data
+# ==============================================================================
+response_times <- c(12, 15, 18, 22, 25, 28, 30, 31, 35, 42, 45, 48, 55, 60, 62)
+hist(response_times, 
+     breaks = 5, 
+     main = "API Response Time Distribution", 
+     xlab = "Response Latency (ms)", 
+     col = "lightblue", 
+     border = "navy", 
+     labels = TRUE)
+
+# ==============================================================================
+# 3. SCATTER PLOT: Bivariate Correlation Analysis
+# ==============================================================================
+marketing_spend <- c(10, 20, 30, 40, 50, 60, 70)
+sales_units     <- c(15, 28, 42, 58, 65, 82, 95)
+plot(x = marketing_spend, 
+     y = sales_units, 
+     main = "Marketing Spend vs Sales Units", 
+     xlab = "Marketing Expenditure ($K)", 
+     ylab = "Sales Volume (Units)", 
+     pch = 19, 
+     col = "darkred")
+# Add regression trend line
+abline(lm(sales_units ~ marketing_spend), col = "blue", lwd = 2)
+
+# ==============================================================================
+# 4. BOX-AND-WHISKER PLOT: Outlier & Dispersion Analysis
+# ==============================================================================
+# Visualizing miles-per-gallon grouped by cylinder count from mtcars
+boxplot(mpg ~ cyl, 
+        data = mtcars, 
+        main = "Mileage Dispersion by Engine Cylinders", 
+        xlab = "Number of Cylinders", 
+        ylab = "Miles Per Gallon (MPG)", 
+        col = c("gold", "lightgreen", "salmon"), 
+        notch = FALSE)
+
+# ==============================================================================
+# 5. LINE CHART: Continuous Time Series Trend
+# ==============================================================================
+days <- 1:7
+active_users <- c(1200, 1450, 1380, 1600, 1850, 2100, 2400)
+plot(days, active_users, 
+     type = "b",          # "b" for both points and lines
+     lwd = 2, 
+     pch = 17, 
+     col = "darkblue", 
+     main = "Daily Active Users (Weekly Trend)", 
+     xlab = "Day of Week", 
+     ylab = "DAU Count")
+
+# ==============================================================================
+# 6. ADVANCED VISUALIZATION: ggplot2 Grammar of Graphics
+# ==============================================================================
+# In production big data analytics, library(ggplot2) provides modular layers:
+# ggplot(data = mtcars, aes(x = wt, y = mpg, color = factor(gear))) +
+#   geom_point(size = 3) +
+#   geom_smooth(method = "lm", se = FALSE) +
+#   labs(title = "Car Weight vs MPG by Gear Count", x = "Weight", y = "MPG")
+```
+
+**MU Keyword Checklist:** barplot(), hist(), plot(), boxplot(), pie(), heatmap(), categorical comparison, continuous distribution, bivariate correlation, 5-number summary, outliers, ggplot2, aesthetics (aes), layers, trendline.
 
 ---
 
