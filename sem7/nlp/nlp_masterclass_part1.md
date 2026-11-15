@@ -374,7 +374,9 @@ Martin Porter's algorithm (1980) is an iterative, rule-based conflation stemmer 
 ### Formal Notation & The Measure $m$
 A consonant is represented by $c$, a vowel by $v$. Sequences of consonants are denoted $C$, sequences of vowels $V$.
 Any English word can be represented by the master pattern:
+
 $$[C](VC)^m[V]$$
+
 where:
 - $[C]$ denotes optional initial consonants.
 - $[V]$ denotes optional trailing vowels.
@@ -568,20 +570,28 @@ Ensure your exam script contains these specific terms:
 A Language Model computes the probability distribution over word sequences $P(W) = P(w_1, w_2, \ldots, w_n)$ or predicts the conditional probability of the next token $P(w_n | w_1, \ldots, w_{n-1})$.
 
 By the exact **Chain Rule of Probability**:
+
 $$P(w_1, w_2, \ldots, w_n) = \prod_{k=1}^n P(w_k \mid w_1, w_2, \ldots, w_{k-1})$$
 
 ### The Markov Assumption
 Computing full historical contexts is computationally intractable due to explosive combinatorial state spaces and data sparsity. The **Markov Assumption** conditions the probability of a word solely on the preceding $N-1$ words:
 - **Unigram Model ($N=1$):** Complete independence.
-  $$P(w_1, w_2, \ldots, w_n) \approx \prod_{k=1}^n P(w_k)$$
+
+$$P(w_1, w_2, \ldots, w_n) \approx \prod_{k=1}^n P(w_k)$$
+
 - **Bigram Model ($N=2$):** Conditions solely on the immediate previous token.
-  $$P(w_1, w_2, \ldots, w_n) \approx \prod_{k=1}^n P(w_k \mid w_{k-1})$$
+
+$$P(w_1, w_2, \ldots, w_n) \approx \prod_{k=1}^n P(w_k \mid w_{k-1})$$
+
 - **Trigram Model ($N=3$):** Conditions on the preceding two tokens.
-  $$P(w_1, w_2, \ldots, w_n) \approx \prod_{k=1}^n P(w_k \mid w_{k-2}, w_{k-1})$$
+
+$$P(w_1, w_2, \ldots, w_n) \approx \prod_{k=1}^n P(w_k \mid w_{k-2}, w_{k-1})$$
 
 ### Maximum Likelihood Estimation (MLE)
 Parameters are estimated by relative frequency counting in a training corpus:
+
 $$P_{MLE}(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i)}{C(w_{i-1})}$$
+
 where $C(w_{i-1}, w_i)$ is the bigram co-occurrence frequency, and $C(w_{i-1}) = \sum_w C(w_{i-1}, w)$ is the unigram frequency of the preceding word.
 
 ---
@@ -702,25 +712,33 @@ In a bigram model, the next word depends **only** on the immediately preceding w
 #### (a) Given sequence: `<s> Sam ...`
 - The preceding word is `Sam`.
 - Candidate probabilities:
-  $$P(\text{I} \mid \text{Sam}) = \frac{3}{5} = 0.60, \quad P(\text{</s>} \mid \text{Sam}) = \frac{2}{5} = 0.40$$
+
+$$P(\text{I} \mid \text{Sam}) = \frac{3}{5} = 0.60, \quad P(\text{</s>} \mid \text{Sam}) = \frac{2}{5} = 0.40$$
+
 - **Most probable next word:** **`I`** (Probability = $0.60$).
 
 #### (b) Given sequence: `<s> Sam I do ...`
 - The preceding word is `do`.
 - Candidate probabilities:
-  $$P(\text{like} \mid \text{do}) = \frac{1}{2} = 0.50, \quad P(\text{I} \mid \text{do}) = \frac{1}{2} = 0.50$$
+
+$$P(\text{like} \mid \text{do}) = \frac{1}{2} = 0.50, \quad P(\text{I} \mid \text{do}) = \frac{1}{2} = 0.50$$
+
 - **Most probable next word:** Tie between **`like`** and **`I`** (Probability = $0.50$ each).
 
 #### (c) Given sequence: `<s> Sam I am Sam ...`
 - The preceding word is `Sam`.
 - Candidate probabilities:
-  $$P(\text{I} \mid \text{Sam}) = \frac{3}{5} = 0.60, \quad P(\text{</s>} \mid \text{Sam}) = \frac{2}{5} = 0.40$$
+
+$$P(\text{I} \mid \text{Sam}) = \frac{3}{5} = 0.60, \quad P(\text{</s>} \mid \text{Sam}) = \frac{2}{5} = 0.40$$
+
 - **Most probable next word:** **`I`** (Probability = $0.60$).
 
 #### (d) Given sequence: `<s> do I like ...`
 - The preceding word is `like`.
 - Candidate probabilities:
-  $$P(\text{</s>} \mid \text{like}) = \frac{2}{3} \approx 0.667, \quad P(\text{Sam} \mid \text{like}) = \frac{1}{3} \approx 0.333$$
+
+$$P(\text{</s>} \mid \text{like}) = \frac{2}{3} \approx 0.667, \quad P(\text{Sam} \mid \text{like}) = \frac{1}{3} \approx 0.333$$
+
 - **Most probable next word:** **`</s>`** (Sentence End, Probability = $0.667$). If restricted to non-boundary words, it is **`Sam`** (Probability = $0.333$).
 
 ---
@@ -728,24 +746,34 @@ In a bigram model, the next word depends **only** on the immediately preceding w
 ### Step 5: Answering Part 2 (Sentence Comparison)
 
 Evaluate the joint probability of each sentence using the bigram formula:
+
 $$P(W) = \prod_{k=1}^n P(w_k \mid w_{k-1})$$
 
 #### Evaluation of (e): `<s> Sam I do I like </s>`
 $$P(W_e) = P(\text{Sam}\mid\text{<s>}) \times P(\text{I}\mid\text{Sam}) \times P(\text{do}\mid\text{I}) \times P(\text{I}\mid\text{do}) \times P(\text{like}\mid\text{I}) \times P(\text{</s>}\mid\text{like})$$
+
 Substitute exact values:
+
 $$P(W_e) = \left(\frac{3}{5}\right) \times \left(\frac{3}{5}\right) \times \left(\frac{1}{5}\right) \times \left(\frac{1}{2}\right) \times \left(\frac{2}{5}\right) \times \left(\frac{2}{3}\right)$$
+
 $$P(W_e) = \frac{3 \times 3 \times 1 \times 1 \times 2 \times 2}{5 \times 5 \times 5 \times 2 \times 5 \times 3} = \frac{36}{3750} = \mathbf{0.0096}$$
 
 #### Evaluation of (f): `<s> Sam I am </s>`
 $$P(W_f) = P(\text{Sam}\mid\text{<s>}) \times P(\text{I}\mid\text{Sam}) \times P(\text{am}\mid\text{I}) \times P(\text{</s>}\mid\text{am})$$
+
 Substitute exact values:
+
 $$P(W_f) = \left(\frac{3}{5}\right) \times \left(\frac{3}{5}\right) \times \left(\frac{2}{5}\right) \times \left(\frac{1}{2}\right)$$
+
 $$P(W_f) = \frac{3 \times 3 \times 2 \times 1}{5 \times 5 \times 5 \times 2} = \frac{18}{250} = \mathbf{0.0720}$$
 
 #### Evaluation of (g): `<s> I do like Sam I am </s>`
 $$P(W_g) = P(\text{I}\mid\text{<s>}) \times P(\text{do}\mid\text{I}) \times P(\text{like}\mid\text{do}) \times P(\text{Sam}\mid\text{like}) \times P(\text{I}\mid\text{Sam}) \times P(\text{am}\mid\text{I}) \times P(\text{</s>}\mid\text{am})$$
+
 Substitute exact values:
+
 $$P(W_g) = \left(\frac{1}{5}\right) \times \left(\frac{1}{5}\right) \times \left(\frac{1}{2}\right) \times \left(\frac{1}{3}\right) \times \left(\frac{3}{5}\right) \times \left(\frac{2}{5}\right) \times \left(\frac{1}{2}\right)$$
+
 $$P(W_g) = \frac{1 \times 1 \times 1 \times 1 \times 3 \times 2 \times 1}{5 \times 5 \times 2 \times 3 \times 5 \times 5 \times 2} = \frac{6}{15000} = \mathbf{0.0004}$$
 
 #### Comparison & Conclusion:
@@ -754,6 +782,7 @@ $$P(W_g) = \frac{1 \times 1 \times 1 \times 1 \times 3 \times 2 \times 1}{5 \tim
 - $P(W_g) = 0.0004$
 
 $$\mathbf{P(W_f) > P(W_e) > P(W_g)}$$
+
 > **Final Conclusion:** Sentence **(f) `<s> Sam I am </s>`** is the best sentence as it receives the highest probability ($0.0720$).
 
 ---
@@ -783,16 +812,23 @@ Occurrences of bigrams starting with `to`:
 - Sentence 3: `(to, relax)` $\to 1$
 
 Total count of unigram `to`:
+
 $$C(\text{"to"}) = 1 + 1 + 1 = 3$$
 
 ### Step 2: Conditional Probabilities for Word Following "to"
 $$P(w \mid \text{"to"}) = \frac{C(\text{"to"}, w)}{C(\text{"to"})}$$
+
 - For $w = \text{"sleep"}$:
-  $$P(\text{"sleep"} \mid \text{"to"}) = \frac{C(\text{"to", "sleep"})}{C(\text{"to"})} = \frac{2}{3} \approx \mathbf{0.667}$$
+
+$$P(\text{"sleep"} \mid \text{"to"}) = \frac{C(\text{"to", "sleep"})}{C(\text{"to"})} = \frac{2}{3} \approx \mathbf{0.667}$$
+
 - For $w = \text{"relax"}$:
-  $$P(\text{"relax"} \mid \text{"to"}) = \frac{C(\text{"to", "relax"})}{C(\text{"to"})} = \frac{1}{3} \approx \mathbf{0.333}$$
+
+$$P(\text{"relax"} \mid \text{"to"}) = \frac{C(\text{"to", "relax"})}{C(\text{"to"})} = \frac{1}{3} \approx \mathbf{0.333}$$
+
 - For all other vocabulary words:
-  $$P(w \mid \text{"to"}) = \frac{0}{3} = \mathbf{0}$$
+
+$$P(w \mid \text{"to"}) = \frac{0}{3} = \mathbf{0}$$
 
 ### Step 3: Next Word Prediction
 $$\arg\max_w P(w \mid \text{"to"}) = \text{"sleep"} \quad \left(P = \frac{2}{3}\right)$$
@@ -806,15 +842,21 @@ $$\arg\max_w P(w \mid \text{"to"}) = \text{"sleep"} \quad \left(P = \frac{2}{3}\
 
 ### The Zero-Frequency Problem
 Maximum Likelihood Estimation assigns probability $P_{MLE} = 0$ to any valid word pair unseen during training. If a single bigram has probability $0$, the joint sentence probability collapses to zero:
+
 $$P(W) = \prod_{k=1}^n P(w_k \mid w_{k-1}) = 0$$
+
 Smoothing re-allocates a fraction of probability mass from frequent events to unseen events.
 
 ### 1. Laplace (Add-1) Smoothing
 Adds 1 to every possible n-gram count:
+
 $$P_{\text{Laplace}}(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i) + 1}{C(w_{i-1}) + V}$$
+
 where $V$ is the total vocabulary size.
 - **Adjusted Count $c^*$:**
-  $$c^* = (C(w_{i-1}, w_i) + 1) \frac{C(w_{i-1})}{C(w_{i-1}) + V}$$
+
+$$c^* = (C(w_{i-1}, w_i) + 1) \frac{C(w_{i-1})}{C(w_{i-1}) + V}$$
+
 - *Limitation:* Shifts far too much probability mass to unseen events when $V$ is large (thousands of words).
 
 ### 2. Good-Turing Discounting
@@ -829,19 +871,25 @@ $$r^* = (r + 1) \frac{N_{r+1}}{N_r}$$
 
 #### Probability of Unseen Events ($r=0$):
 The total probability mass reserved for all unseen events is:
+
 $$P_0 = \frac{N_1}{N}$$
+
 where $N = \sum_{r=1}^\infty r N_r$ is the total token count.
 For each individual unseen event:
+
 $$P(w_{\text{unseen}}) = \frac{P_0}{N_0} = \frac{N_1}{N \cdot N_0}$$
 
 ### 3. Perplexity of a Language Model
 *(Appeared in: Dec 2022 Q1f [5M])*
 
 **Perplexity ($PP$)** is the standard evaluation metric for language models. It represents the reciprocal of the geometric mean probability of the test set:
+
 $$PP(W) = P(w_1, w_2, \ldots, w_N)^{-\frac{1}{N}} = \sqrt[N]{\frac{1}{\prod_{i=1}^N P(w_i \mid w_{i-1})}}$$
 
 Converting to logarithmic form (cross-entropy $H(W)$):
+
 $$H(W) = -\frac{1}{N} \sum_{i=1}^N \log_2 P(w_i \mid w_{i-1})$$
+
 $$PP(W) = 2^{H(W)}$$
 
 - **Interpretation:** Perplexity measures the *effective branching factor* of the language model (the weighted average number of choices the model faces at each step).
@@ -940,11 +988,15 @@ $$\hat{T} = \arg\max_T P(T \mid W) = \arg\max_T \frac{P(W \mid T) P(T)}{P(W)} = 
 
 Under the two fundamental HMM assumptions:
 1. **Bigram Tag Independence Assumption:** The probability of a tag depends solely on the immediate predecessor:
-   $$P(T) \approx \prod_{i=1}^n P(t_i \mid t_{i-1})$$
+
+$$P(T) \approx \prod_{i=1}^n P(t_i \mid t_{i-1})$$
+
 2. **Output Emission Independence Assumption:** The emission of word $w_i$ depends solely on current state $t_i$:
-   $$P(W \mid T) \approx \prod_{i=1}^n P(w_i \mid t_i)$$
+
+$$P(W \mid T) \approx \prod_{i=1}^n P(w_i \mid t_i)$$
 
 The optimal sequence decoding problem becomes:
+
 $$\hat{T} = \arg\max_T \prod_{i=1}^n \underbrace{P(t_i \mid t_{i-1})}_{\text{Transition } a_{ij}} \cdot \underbrace{P(w_i \mid t_i)}_{\text{Emission } b_j(w_i)}$$
 
 ### Limitations of HMM
@@ -978,7 +1030,9 @@ $$\hat{T} = \arg\max_T \prod_{i=1}^n \underbrace{P(t_i \mid t_{i-1})}_{\text{Tra
    - **Directionality Rigidity:** Forward-only Markov conditioning cannot condition current tag $t_i$ on future tags $t_{i+1}$ without complex higher-order extensions.
 2. **Detailed Limitations of Maximum Entropy (MaxEnt / MEMM) Models:**
    - **The Label Bias Problem:** MaxEnt models compute transition probabilities locally at each step:
-     $$P(y_t \mid y_{t-1}, x_t) = \frac{\exp(\sum \lambda_k f_k)}{\sum_{y'} \exp(\sum \lambda_k f_k)}$$
+
+$$P(y_t \mid y_{t-1}, x_t) = \frac{\exp(\sum \lambda_k f_k)}{\sum_{y'} \exp(\sum \lambda_k f_k)}$$
+
      Because each state's outgoing probabilities must sum to 1 locally, **states with few outgoing transitions have very low entropy**. Even if the observed word $x_t$ strongly disagrees with that transition, the model is mathematically forced to assign it high local probability, ignoring the true observational evidence!
    - **Failure to Find Global Optimum:** Because normalizations are performed per state transition rather than over the entire sentence string, MEMM cannot guarantee that the decoded sequence is globally optimal. (This fundamental flaw directly led to the invention of **Linear-Chain CRFs**, which use global normalization $Z(X)$).
 
@@ -989,16 +1043,26 @@ The Viterbi algorithm finds the optimal state sequence in $O(N^2 \cdot T)$ time 
 
 ### Formal Recurrence Equations:
 1. **Initialization ($t = 1$):**
-   $$\nu_1(j) = \pi_j \cdot b_j(w_1) = P(t_j \mid \text{<s>}) \cdot P(w_1 \mid t_j), \quad 1 \le j \le N$$
-   $$\mathrm{bp}_1(j) = 0$$
+
+$$\nu_1(j) = \pi_j \cdot b_j(w_1) = P(t_j \mid \text{<s>}) \cdot P(w_1 \mid t_j), \quad 1 \le j \le N$$
+
+$$\mathrm{bp}_1(j) = 0$$
+
 2. **Induction / Recursion ($2 \le t \le T$):**
-   $$\nu_t(j) = \max_{1 \le i \le N} \left[ \nu_{t-1}(i) \cdot a_{ij} \right] \cdot b_j(w_t), \quad 1 \le j \le N$$
-   $$\mathrm{bp}_t(j) = \arg\max_{1 \le i \le N} \left[ \nu_{t-1}(i) \cdot a_{ij} \right]$$
+
+$$\nu_t(j) = \max_{1 \le i \le N} \left[ \nu_{t-1}(i) \cdot a_{ij} \right] \cdot b_j(w_t), \quad 1 \le j \le N$$
+
+$$\mathrm{bp}_t(j) = \arg\max_{1 \le i \le N} \left[ \nu_{t-1}(i) \cdot a_{ij} \right]$$
+
 3. **Termination:**
-   $$P^* = \max_{1 \le i \le N} \nu_T(i)$$
-   $$q_T^* = \arg\max_{1 \le i \le N} \nu_T(i)$$
+
+$$P^* = \max_{1 \le i \le N} \nu_T(i)$$
+
+$$q_T^* = \arg\max_{1 \le i \le N} \nu_T(i)$$
+
 4. **Backtracking ($t = T-1$ down to $1$):**
-   $$q_t^* = \mathrm{bp}_{t+1}(q_{t+1}^*)$$
+
+$$q_t^* = \mathrm{bp}_{t+1}(q_{t+1}^*)$$
 
 ---
 
@@ -1149,15 +1213,24 @@ Sentence length $T = 4$:
 
 #### Time Step $t = 1$ ($w_1 = \text{"Justin"}$):
 $$\nu_1(j) = P(t_j \mid \text{<s>}) \times P(\text{"Justin"} \mid t_j)$$
+
 - For $j = N$:
-  $$\nu_1(N) = P(N \mid \text{<s>}) \times P(\text{"Justin"} \mid N) = 1.0 \times 0.2 = \mathbf{0.20}$$
-  $$\mathrm{bp}_1(N) = 0$$
+
+$$\nu_1(N) = P(N \mid \text{<s>}) \times P(\text{"Justin"} \mid N) = 1.0 \times 0.2 = \mathbf{0.20}$$
+
+$$\mathrm{bp}_1(N) = 0$$
+
 - For $j = M$:
-  $$\nu_1(M) = P(M \mid \text{<s>}) \times P(\text{"Justin"} \mid M) = 0.0 \times 0.0 = \mathbf{0.0}$$
-  $$\mathrm{bp}_1(M) = 0$$
+
+$$\nu_1(M) = P(M \mid \text{<s>}) \times P(\text{"Justin"} \mid M) = 0.0 \times 0.0 = \mathbf{0.0}$$
+
+$$\mathrm{bp}_1(M) = 0$$
+
 - For $j = V$:
-  $$\nu_1(V) = P(V \mid \text{<s>}) \times P(\text{"Justin"} \mid V) = 0.0 \times 0.0 = \mathbf{0.0}$$
-  $$\mathrm{bp}_1(V) = 0$$
+
+$$\nu_1(V) = P(V \mid \text{<s>}) \times P(\text{"Justin"} \mid V) = 0.0 \times 0.0 = \mathbf{0.0}$$
+
+$$\mathrm{bp}_1(V) = 0$$
 
 ---
 
@@ -1167,14 +1240,20 @@ $$\nu_2(j) = \max_{i \in \{N, M, V\}} \left[ \nu_1(i) \times P(t_j \mid t_i) \ri
 - **For $j = N$:**
   $P(\text{"will"} \mid N) = 0 \implies \nu_2(N) = \mathbf{0.0}$
 - **For $j = M$:**
-  $$P(\text{"will"} \mid M) = \frac{2}{3} \approx 0.667$$
+
+$$P(\text{"will"} \mid M) = \frac{2}{3} \approx 0.667$$
+
   Evaluate candidate transitions from $t=1$:
   - From $N$: $\nu_1(N) \times P(M \mid N) = 0.20 \times 0.3 = 0.060$
   - From $M$: $\nu_1(M) \times P(M \mid M) = 0.0 \times 0.0 = 0.0$
   - From $V$: $\nu_1(V) \times P(M \mid V) = 0.0 \times 0.0 = 0.0$
-  $$\max = 0.060 \quad (\text{from } i = N)$$
-  $$\nu_2(M) = 0.060 \times \frac{2}{3} = \mathbf{0.040}$$
-  $$\mathrm{bp}_2(M) = N$$
+
+$$\max = 0.060 \quad (\text{from } i = N)$$
+
+$$\nu_2(M) = 0.060 \times \frac{2}{3} = \mathbf{0.040}$$
+
+$$\mathrm{bp}_2(M) = N$$
+
 - **For $j = V$:**
   $P(\text{"will"} \mid V) = 0 \implies \nu_2(V) = \mathbf{0.0}$
 
@@ -1188,14 +1267,19 @@ $$\nu_3(j) = \max_{i \in \{N, M, V\}} \left[ \nu_2(i) \times P(t_j \mid t_i) \ri
 - **For $j = M$:**
   $P(\text{"spot"} \mid M) = 0 \implies \nu_3(M) = \mathbf{0.0}$
 - **For $j = V$:**
-  $$P(\text{"spot"} \mid V) = \frac{1}{4} = 0.25$$
+
+$$P(\text{"spot"} \mid V) = \frac{1}{4} = 0.25$$
+
   Evaluate candidate transitions from $t=2$:
   - From $N$: $\nu_2(N) \times P(V \mid N) = 0.0 \times 0.1 = 0.0$
   - From $M$: $\nu_2(M) \times P(V \mid M) = 0.040 \times 1.0 = 0.040$
   - From $V$: $\nu_2(V) \times P(V \mid V) = 0.0 \times 0.0 = 0.0$
-  $$\max = 0.040 \quad (\text{from } i = M)$$
-  $$\nu_3(V) = 0.040 \times 0.25 = \mathbf{0.010}$$
-  $$\mathrm{bp}_3(V) = M$$
+
+$$\max = 0.040 \quad (\text{from } i = M)$$
+
+$$\nu_3(V) = 0.040 \times 0.25 = \mathbf{0.010}$$
+
+$$\mathrm{bp}_3(V) = M$$
 
 ---
 
@@ -1203,14 +1287,20 @@ $$\nu_3(j) = \max_{i \in \{N, M, V\}} \left[ \nu_2(i) \times P(t_j \mid t_i) \ri
 $$\nu_4(j) = \max_{i \in \{N, M, V\}} \left[ \nu_3(i) \times P(t_j \mid t_i) \right] \times P(\text{"Will"} \mid t_j)$$
 
 - **For $j = N$:**
-  $$P(\text{"Will"} \mid N) = \frac{2}{10} = 0.20$$
+
+$$P(\text{"Will"} \mid N) = \frac{2}{10} = 0.20$$
+
   Evaluate candidate transitions from $t=3$:
   - From $N$: $\nu_3(N) \times P(N \mid N) = 0.0 \times 0.2 = 0.0$
   - From $M$: $\nu_3(M) \times P(N \mid M) = 0.0 \times 0.0 = 0.0$
   - From $V$: $\nu_3(V) \times P(N \mid V) = 0.010 \times 1.0 = 0.010$
-  $$\max = 0.010 \quad (\text{from } i = V)$$
-  $$\nu_4(N) = 0.010 \times 0.20 = \mathbf{0.0020}$$
-  $$\mathrm{bp}_4(N) = V$$
+
+$$\max = 0.010 \quad (\text{from } i = V)$$
+
+$$\nu_4(N) = 0.010 \times 0.20 = \mathbf{0.0020}$$
+
+$$\mathrm{bp}_4(N) = V$$
+
 - **For $j = M$:**
   $P(\text{"Will"} \mid M) = 0 \implies \nu_4(M) = \mathbf{0.0}$
 - **For $j = V$:**
@@ -1225,6 +1315,7 @@ At $t = 4$:
 - $\nu_4(V) = 0.0$
 
 The maximum final probability is:
+
 $$P^* = 0.0020 \implies q_4^* = N$$
 
 Trace backpointers:
@@ -1336,23 +1427,33 @@ Given corpus:
 Sentence: $w_1 = \text{"the"}, \; w_2 = \text{"cat"}, \; w_3 = \text{"chases"}, \; w_4 = \text{"the"}, \; w_5 = \text{"dog"}$.
 
 - **$t = 1$ ($w_1 = \text{"the"}$):**
-  $$\nu_1(\text{DT}) = P(\text{DT} \mid \text{<s>}) \times P(\text{"the"} \mid \text{DT}) = 1.0 \times 0.25 = \mathbf{0.25}, \quad \mathrm{bp}_1(\text{DT}) = 0$$
+
+$$\nu_1(\text{DT}) = P(\text{DT} \mid \text{<s>}) \times P(\text{"the"} \mid \text{DT}) = 1.0 \times 0.25 = \mathbf{0.25}, \quad \mathrm{bp}_1(\text{DT}) = 0$$
+
   All other tags have probability 0.
 
 - **$t = 2$ ($w_2 = \text{"cat"}$):**
-  $$\nu_2(\text{NN}) = \nu_1(\text{DT}) \times P(\text{NN} \mid \text{DT}) \times P(\text{"cat"} \mid \text{NN}) = 0.25 \times 1.0 \times 0.50 = \mathbf{0.125}, \quad \mathrm{bp}_2(\text{NN}) = \text{DT}$$
+
+$$\nu_2(\text{NN}) = \nu_1(\text{DT}) \times P(\text{NN} \mid \text{DT}) \times P(\text{"cat"} \mid \text{NN}) = 0.25 \times 1.0 \times 0.50 = \mathbf{0.125}, \quad \mathrm{bp}_2(\text{NN}) = \text{DT}$$
+
   All other tags have probability 0.
 
 - **$t = 3$ ($w_3 = \text{"chases"}$):**
-  $$\nu_3(\text{V}) = \nu_2(\text{NN}) \times P(\text{V} \mid \text{NN}) \times P(\text{"chases"} \mid \text{V}) = 0.125 \times 0.75 \times \frac{1}{3} = \mathbf{0.03125}, \quad \mathrm{bp}_3(\text{V}) = \text{NN}$$
+
+$$\nu_3(\text{V}) = \nu_2(\text{NN}) \times P(\text{V} \mid \text{NN}) \times P(\text{"chases"} \mid \text{V}) = 0.125 \times 0.75 \times \frac{1}{3} = \mathbf{0.03125}, \quad \mathrm{bp}_3(\text{V}) = \text{NN}$$
+
   All other tags have probability 0.
 
 - **$t = 4$ ($w_4 = \text{"the"}$):**
-  $$\nu_4(\text{DT}) = \nu_3(\text{V}) \times P(\text{DT} \mid \text{V}) \times P(\text{"the"} \mid \text{DT}) = 0.03125 \times \frac{1}{3} \times 0.25 = \frac{0.03125}{12} \approx \mathbf{0.002604}, \quad \mathrm{bp}_4(\text{DT}) = \text{V}$$
+
+$$\nu_4(\text{DT}) = \nu_3(\text{V}) \times P(\text{DT} \mid \text{V}) \times P(\text{"the"} \mid \text{DT}) = 0.03125 \times \frac{1}{3} \times 0.25 = \frac{0.03125}{12} \approx \mathbf{0.002604}, \quad \mathrm{bp}_4(\text{DT}) = \text{V}$$
+
   All other tags have probability 0.
 
 - **$t = 5$ ($w_5 = \text{"dog"}$):**
-  $$\nu_5(\text{NN}) = \nu_4(\text{DT}) \times P(\text{NN} \mid \text{DT}) \times P(\text{"dog"} \mid \text{NN}) = 0.002604 \times 1.0 \times 0.50 \approx \mathbf{0.001302}, \quad \mathrm{bp}_5(\text{NN}) = \text{DT}$$
+
+$$\nu_5(\text{NN}) = \nu_4(\text{DT}) \times P(\text{NN} \mid \text{DT}) \times P(\text{"dog"} \mid \text{NN}) = 0.002604 \times 1.0 \times 0.50 \approx \mathbf{0.001302}, \quad \mathrm{bp}_5(\text{NN}) = \text{DT}$$
+
   All other tags have probability 0.
 
 #### Backtracking:
@@ -1369,13 +1470,18 @@ $$q_5^* = \text{NN} \to q_4^* = \text{DT} \to q_3^* = \text{V} \to q_2^* = \text
 
 ### 1. Maximum Entropy (MaxEnt) / Multinomial Logistic Regression
 MaxEnt is a **discriminative** framework modeling the posterior conditional probability directly:
+
 $$P(y \mid x) = \frac{1}{Z(x)} \exp\left( \sum_{i=1}^K \lambda_i f_i(x, y) \right)$$
+
 where:
 - $x$ is the context (current word, neighboring words, affixes, previous tags).
 - $y$ is the candidate POS tag.
 - $f_i(x, y)$ are arbitrary binary **indicator feature functions**:
-  $$f_1(x, y) = \begin{cases} 1 & \text{if word ends in "-tion" and } y = \text{NN} \\ 0 & \text{otherwise} \end{cases}$$
-  $$f_2(x, y) = \begin{cases} 1 & \text{if previous word is "the" and } y \in \{\text{NN, JJ}\} \\ 0 & \text{otherwise} \end{cases}$$
+
+$$f_1(x, y) = \begin{cases} 1 & \text{if word ends in "-tion" and } y = \text{NN} \\ 0 & \text{otherwise} \end{cases}$$
+
+$$f_2(x, y) = \begin{cases} 1 & \text{if previous word is "the" and } y \in \{\text{NN, JJ}\} \\ 0 & \text{otherwise} \end{cases}$$
+
 - $\lambda_i$ are learned feature weights (via L-BFGS or GIS).
 - $Z(x) = \sum_{y'} \exp\left( \sum_i \lambda_i f_i(x, y') \right)$ is the per-token **local normalization factor**.
 
@@ -1402,12 +1508,15 @@ where:
 A linear-chain CRF solves label bias by removing local normalization. It defines a single **global clique potential** over the entire sentence sequence:
 
 $$P(Y \mid X) = \frac{1}{Z(X)} \exp\left( \sum_{t=1}^T \sum_{k} \lambda_k f_k(y_{t-1}, y_t, X, t) \right)$$
+
 where $Z(X)$ is the global partition function computed across **all possible full sequences** $\mathcal{Y}$:
+
 $$Z(X) = \sum_{Y' \in \mathcal{Y}} \exp\left( \sum_{t=1}^T \sum_k \lambda_k f_k(y'_{t-1}, y'_t, X, t) \right)$$
 
 - **Training:** Maximum conditional likelihood with $L_2$ regularization.
 - **Decoding:** Global Viterbi algorithm operating over additive log-potentials:
-  $$\hat{Y} = \arg\max_Y \sum_{t=1}^T \sum_k \lambda_k f_k(y_{t-1}, y_t, X, t)$$
+
+$$\hat{Y} = \arg\max_Y \sum_{t=1}^T \sum_k \lambda_k f_k(y_{t-1}, y_t, X, t)$$
 
 ### Architectural Comparison: HMM vs MaxEnt/MEMM vs CRF
 

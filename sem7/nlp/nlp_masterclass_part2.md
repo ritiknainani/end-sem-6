@@ -13,7 +13,9 @@
 
 ### Context-Free Grammar (CFG)
 A Context-Free Grammar is formally defined as a 4-tuple:
+
 $$G = (V_N, V_T, P, S)$$
+
 where:
 - $V_N$: A finite set of **non-terminal** characters (syntactic categories like $S, NP, VP, PP$).
 - $V_T$: A finite set of **terminal** symbols disjoint from $V_N$ (lexical words like `the`, `man`, `read`).
@@ -26,12 +28,16 @@ Standard CFGs suffer from two major flaws:
 2. They cannot model lexical selectional preferences.
 
 A **PCFG** augments each production rule $A \to \alpha$ with a conditional probability $P(A \to \alpha)$:
+
 $$\sum_{\alpha} P(A \to \alpha) = 1 \quad \forall A \in V_N$$
 
 #### Probability of a Parse Tree:
 The probability of an entire derivation tree $T$ is the product of the probabilities of all rules $r \in T$ used in its construction:
+
 $$P(T, S) = \prod_{A \to \alpha \in T} P(A \to \alpha)$$
+
 The optimal parse tree for an ambiguous sentence is chosen via:
+
 $$\hat{T} = \arg\max_T P(T \mid S)$$
 
 #### Parameter Estimation (from Treebank):
@@ -101,16 +107,16 @@ $S \to NP \; VP, \quad NP \to Det \; Adj \; N \mid Det \; N, \quad VP \to V, \qu
 | Step | Stack | Input Buffer | Action Taken | Rule Applied |
 |:---:|:---|:---|:---|:---|
 | 0 | `$` | `The tall girl sings $` | **Shift** | — |
-| 1 | `$ The` | `tall girl sings $` | **Reduce** | $Det \to \text{"The"}$ |
+| 1 | `$ The` | `tall girl sings $` | **Reduce** | `Det -> "The"` |
 | 2 | `$ Det` | `tall girl sings $` | **Shift** | — |
-| 3 | `$ Det tall` | `girl sings $` | **Reduce** | $Adj \to \text{"tall"}$ |
+| 3 | `$ Det tall` | `girl sings $` | **Reduce** | `Adj -> "tall"` |
 | 4 | `$ Det Adj` | `girl sings $` | **Shift** | — |
-| 5 | `$ Det Adj girl` | `sings $` | **Reduce** | $N \to \text{"girl"}$ |
-| 6 | `$ Det Adj N` | `sings $` | **Reduce** | $NP \to Det \; Adj \; N$ |
+| 5 | `$ Det Adj girl` | `sings $` | **Reduce** | `N -> "girl"` |
+| 6 | `$ Det Adj N` | `sings $` | **Reduce** | `NP -> Det Adj N` |
 | 7 | `$ NP` | `sings $` | **Shift** | — |
-| 8 | `$ NP sings` | `$` | **Reduce** | $V \to \text{"sings"}$ |
-| 9 | `$ NP V` | `$` | **Reduce** | $VP \to V$ |
-| 10 | `$ NP VP` | `$` | **Reduce** | $S \to NP \; VP$ |
+| 8 | `$ NP sings` | `$` | **Reduce** | `V -> "sings"` |
+| 9 | `$ NP V` | `$` | **Reduce** | `VP -> V` |
+| 10 | `$ NP VP` | `$` | **Reduce** | `S -> NP VP` |
 | 11 | `$ S` | `$` | **Accept** | Parse successful! |
 
 ---
@@ -120,6 +126,7 @@ $S \to NP \; VP, \quad NP \to Det \; Adj \; N \mid Det \; N, \quad VP \to V, \qu
 
 ### Problem Statement:
 For the given grammar using the CYK algorithm, parse the statement:
+
 $$\mathbf{"The \; man \; read \; this \; book"}$$
 
 **Given Grammar Rules:**
@@ -140,7 +147,9 @@ $$\mathbf{"The \; man \; read \; this \; book"}$$
 
 ### Step 1: CNF Compliance & Grammar Closure
 CYK operates strictly on grammars in **Chomsky Normal Form (CNF)**, where all productions are of the form:
+
 $$A \to B \; C \quad \text{or} \quad A \to a$$
+
 The provided grammar contains unary/unit rules:
 - $NOM \to Noun$
 - $VP \to Verb$
@@ -174,9 +183,11 @@ We construct a 2D triangular table $T[i, j]$, where:
 
 #### CYK Recurrence Relation:
 For length $j = 1$ (base case):
+
 $$T[i, 1] = \{ A \mid A \to w_i \in P \}$$
 
 For length $j \ge 2$ (span combinations):
+
 $$T[i, j] = \bigcup_{k=1}^{j-1} \{ A \mid A \to B \; C \in P, \; B \in T[i, k], \; C \in T[i+k, j-k] \}$$
 
 ---
@@ -444,18 +455,24 @@ When a sense-annotated corpus (e.g., SemCor) is available, WSD is formulated as 
 
 ### Mathematical Formulation:
 Given a context window $C = \{w_{-k}, \ldots, w_{-1}, w_{+1}, \ldots, w_{+k}\}$ around ambiguous word $w$, find sense $\hat{s} \in S$:
+
 $$\hat{s} = \arg\max_{s \in S} P(s \mid C) = \arg\max_{s \in S} \frac{P(C \mid s) P(s)}{P(C)} = \arg\max_{s \in S} P(s) P(C \mid s)$$
 
 Assuming conditional independence of context features given sense $s$ (Naive Bayes Assumption):
+
 $$\hat{s} = \arg\max_{s \in S} \left[ P(s) \prod_{j=-k, j \ne 0}^{+k} P(w_j \mid s) \right]$$
 
 In log-space to prevent underflow:
+
 $$\hat{s} = \arg\max_{s \in S} \left[ \log P(s) + \sum_{j=-k, j \ne 0}^{+k} \log P(w_j \mid s) \right]$$
 
 - **Prior Probability $P(s)$:**
-  $$P(s) = \frac{\text{Count}(s, w)}{\text{Count}(w)}$$
+
+$$P(s) = \frac{\text{Count}(s, w)}{\text{Count}(w)}$$
+
 - **Feature Likelihood with Laplace Smoothing:**
-  $$P(w_j \mid s) = \frac{\text{Count}(w_j, s) + 1}{\sum_{w' \in V} \text{Count}(w', s) + |V|}$$
+
+$$P(w_j \mid s) = \frac{\text{Count}(w_j, s) + 1}{\sum_{w' \in V} \text{Count}(w', s) + |V|}$$
 
 ---
 
@@ -682,14 +699,19 @@ For every utterance $U_n$ in a discourse:
 1. **Forward-Looking Centers List $C_f(U_n)$:**
    An ordered set of all discourse entities mentioned in utterance $U_n$.
    Ranked strictly by grammatical salience:
-   $$\mathbf{Subject > Object > Indirect \; Object > Other \; Obliques}$$
+
+$$\mathbf{Subject > Object > Indirect \; Object > Other \; Obliques}$$
+
 2. **Preferred Center $C_p(U_n)$:**
    The highest-ranked element in $C_f(U_n)$. It represents the speaker's predicted topic for the next utterance:
-   $$C_p(U_n) = \text{First}(C_f(U_n))$$
+
+$$C_p(U_n) = \text{First}(C_f(U_n))$$
+
 3. **Backward-Looking Center $C_b(U_n)$:**
    The single entity that links utterance $U_n$ back to the preceding utterance $U_{n-1}$.
    It is the highest-ranked entity of $C_f(U_{n-1})$ that appears anywhere in $C_f(U_n)$:
-   $$C_b(U_n) = \arg\max_{c \in C_f(U_n) \cap C_f(U_{n-1})} \text{Rank}_{C_f(U_{n-1})}(c)$$
+
+$$C_b(U_n) = \arg\max_{c \in C_f(U_n) \cap C_f(U_{n-1})} \text{Rank}_{C_f(U_{n-1})}(c)$$
 
 ### The 4 Discourse Transition States
 The relationship between $U_{n-1}$ and $U_n$ is categorized along two orthogonal binary dimensions:
@@ -713,6 +735,7 @@ The relationship between $U_{n-1}$ and $U_n$ is categorized along two orthogonal
 
 ### Centering Theory Preference Rule:
 Discourse coherence follows this strict descending order of transitions:
+
 $$\mathbf{CONTINUE \succ RETAIN \succ SMOOTH\text{-}SHIFT \succ ROUGH\text{-}SHIFT}$$
 
 ### Comparison: Hobbs' Algorithm vs Centering Theory
@@ -793,7 +816,9 @@ Machine Translation systems automatically translate source natural language text
 
 4. **Statistical Machine Translation (SMT) & The Noisy Channel Model:**
    - Formulates translation as decoding a corrupted signal through a noisy channel:
-     $$\hat{E} = \arg\max_E P(E \mid F) = \arg\max_E \frac{P(F \mid E) P(E)}{P(F)} = \arg\max_E \underbrace{P(F \mid E)}_{\text{Translation Model}} \times \underbrace{P(E)}_{\text{Language Model}}$$
+
+$$\hat{E} = \arg\max_E P(E \mid F) = \arg\max_E \frac{P(F \mid E) P(E)}{P(F)} = \arg\max_E \underbrace{P(F \mid E)}_{\text{Translation Model}} \times \underbrace{P(E)}_{\text{Language Model}}$$
+
    - **Translation Model $P(F \mid E)$:** Ensures faithfulness/fidelity (word alignment via IBM Models 1-5, phrase-based tables).
    - **Language Model $P(E)$:** Ensures fluency and grammatical correctness in the target language (N-gram LM).
 
@@ -828,13 +853,20 @@ Machine Translation systems automatically translate source natural language text
 
 ### The Information Retrieval Mathematical Foundation:
 1. **Term Frequency (TF):**
-   $$\text{TF}(t, d) = \frac{f_{t, d}}{\sum_{t' \in d} f_{t', d}}$$
+
+$$\text{TF}(t, d) = \frac{f_{t, d}}{\sum_{t' \in d} f_{t', d}}$$
+
 2. **Inverse Document Frequency (IDF):**
-   $$\text{IDF}(t, D) = \log \left( \frac{|D|}{|\{d \in D : t \in d\}|} \right)$$
+
+$$\text{IDF}(t, D) = \log \left( \frac{|D|}{|\{d \in D : t \in d\}|} \right)$$
+
 3. **TF-IDF Weight:**
-   $$w_{t, d} = \text{TF}(t, d) \times \text{IDF}(t, D)$$
+
+$$w_{t, d} = \text{TF}(t, d) \times \text{IDF}(t, D)$$
+
 4. **Cosine Similarity Scoring:**
-   $$\text{Sim}(Q, D_i) = \frac{\vec{V}(Q) \cdot \vec{V}(D_i)}{\|\vec{V}(Q)\| \|\vec{V}(D_i)\|} = \frac{\sum_{t} w_{t, Q} \cdot w_{t, D_i}}{\sqrt{\sum_t w_{t, Q}^2} \sqrt{\sum_t w_{t, D_i}^2}}$$
+
+$$\text{Sim}(Q, D_i) = \frac{\vec{V}(Q) \cdot \vec{V}(D_i)}{\|\vec{V}(Q)\| \|\vec{V}(D_i)\|} = \frac{\sum_{t} w_{t, Q} \cdot w_{t, D_i}}{\sqrt{\sum_t w_{t, Q}^2} \sqrt{\sum_t w_{t, D_i}^2}}$$
 
 ---
 
