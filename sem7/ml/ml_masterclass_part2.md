@@ -1,634 +1,573 @@
-# Mumbai University (MU) Semester 7 — Machine Learning (ML)
-## Masterclass Part 2: Modules 4, 5 & 6 (SVM, Multiclass, Clustering & Dimensionality Reduction)
-**Course Code:** Department Level Optional Course (DLOC) | **Scheme:** Rev 2019 / C-Scheme | **Applicable Cycles:** Dec 2022 – May 2025
+# 📘 ML ULTIMATE MASTERCLASS — Part 2: TIER 2 & TIER 3 (HIGH YIELD & EXTENSIONS)
+## Course: Machine Learning (DLOC) | Scheme: Mumbai University Rev 2019 / C-Scheme
+### Applicable Exam Cycles: Dec 2022, May 2023, Dec 2023, May 2024, Dec 2024, May 2025, Nov 2025 (7 Cycles Calibrated)
 
 ---
 
-# MODULE 4: LEARNING WITH CLASSIFICATION (SVM & MULTICLASS)
+> ### 🎯 Tier 2 & Tier 3 Structure & Roadmap
+> **Tier 2 (High Yield: 3–6 appearances) & Tier 3 (Core Extensions / Short Notes: 1–3 appearances).**
+> - **Q8.** Linear Discriminant Analysis (LDA): Fisher's Criterion Derivation & Solved 2D Projection Numerical [10 Marks] — *(6/7 Papers — Tier 1/2 High Yield)*
+> - **Q9.** Logistic Regression: Sigmoid Hypothesis, Odds Ratio, Log-Loss Cost Function & Gradient Descent [10 Marks] — *(6/7 Papers — Tier 1/2 High Yield)*
+> - **Q10.** Multiclass Classification Strategies: One-vs-Rest, One-vs-One & Softmax Multinomial Logistic Regression [10 Marks] — *(5/7 Papers — Tier 2 High Yield)*
+> - **Q11.** Principal Component Analysis (PCA) & Singular Value Decomposition (SVD): Covariance Derivation & Solved Numerical [10 Marks] — *(4/7 Papers — Tier 2 High Yield)*
+> - **Q12.** Graph-Based Clustering: Minimum Spanning Tree (MST) Algorithm & Cluster Extraction [10 Marks] — *(4/7 Papers — Tier 2 High Yield)*
+> - **Q13.** Model-Based Clustering: Expectation-Maximization (EM) Algorithm for Gaussian Mixture Models (GMM) [10 Marks] — *(3/7 Papers — Tier 2 High Yield)*
+> - **Q14.** Distance & Similarity Metrics in ML: Euclidean, Manhattan, Minkowski, Cosine & Mahalanobis [5–10 Marks] — *(Nov 2025 & Recurring Core Theory)*
+> - **Q15.** Model Validation, Resampling Strategies & Bias-Variance Decomposition: K-Fold CV & Mathematical Trade-Off [10 Marks] — *(Recurring Core Theory)*
 
 ---
+---
 
-## 4.1 Support Vector Machines (SVM): Geometric Intuition & Concepts
-*(Appeared in: Dec 2022 Q1c [5M], Dec 2023 Q1d/Q4a [10M], May 2024 Q6a [10M], Dec 2024 Q6b [10M], May 2025 Q1c [5M])*
+## Q8. Linear Discriminant Analysis (LDA): Fisher's Criterion Derivation & Solved 2D Projection Numerical [10 Marks]
+*(Appeared in: Dec 2022 Q5a [10M], May 2023 Q6b [10M], Dec 2023 Q1b [5M], May 2024 Q5b [10M], May 2025 Q2b [10M], Nov 2025 Q3b [10M])*
 
-A Support Vector Machine (Vapnik, 1995) is a maximum-margin linear or non-linear classifier based on Structural Risk Minimization from statistical learning theory.
+### a) Core Concept: Supervised Dimensionality Reduction vs Unsupervised PCA
+**Linear Discriminant Analysis (LDA)** is a supervised dimensionality reduction and linear classification technique developed by Ronald Fisher.
+While **PCA** is unsupervised and searches for directions of maximum total variance (ignoring class labels), **LDA** finds a projection subspace $\mathbf{w}$ that maximizes the separation between distinct class distributions while minimizing the variance within each class.
 
 ```
 +---------------------------------------------------------------------------------------------------+
-|                                 SVM OPTIMAL DECISION BOUNDARY & MARGIN                            |
+|                                     PCA VS LDA PROJECTION OBJECTIVE                               |
 +---------------------------------------------------------------------------------------------------+
-|  x_2                                                                                              |
-|   ^                                                                                               |
-|   |                  Positive Margin Hyperplane: w^T x + b = +1                                   |
-|   |                  .......................................                                      |
-|   |                     (+)                                                                       |
-|   |                 (+)       (+) [Support Vector]                                                |
-|   |                             \                                                                 |
-|   |          Optimal Decision    \  <--- Distance = 1 / ||w||                                     |
-|   |          Hyperplane:          \                                                               |
-|   |          w^T x + b = 0  =======================================                               |
-|   |                               /                                                               |
-|   |                              /  <--- Distance = 1 / ||w||                                     |
-|   |                             /                                                                 |
-|   |                            (-) [Support Vector]                                               |
-|   |                   (-)                                                                         |
-|   |                  .......................................                                      |
-|   |                  Negative Margin Hyperplane: w^T x + b = -1                                   |
-|   |                                                                                               |
-|   |                  <-------------- Total Margin gamma = 2 / ||w|| -------------->               |
-|   +-----------------------------------------------------------------------------> x_1             |
-+---------------------------------------------------------------------------------------------------+
-```
-
-### Essential Terminology:
-1. **Decision Hyperplane:** An affine subspace of dimension $d-1$ dividing $d$-dimensional space into two half-spaces:
-   $$w^T x + b = 0$$
-   where $w$ is the normal weight vector and $b$ is the scalar bias.
-2. **Support Vectors:** The critical training data points that lie directly on the boundary margins ($w^T x_i + b = \pm 1$). Removing all other training points leaves the decision boundary unchanged; moving a support vector alters the entire boundary.
-3. **Geometric Margin ($\gamma$):** The perpendicular distance between the positive margin ($w^T x + b = +1$) and negative margin ($w^T x + b = -1$):
-   $$\gamma = \frac{(w^T x_+ + b) - (w^T x_- + b)}{\|w\|} = \frac{1 - (-1)}{\|w\|} = \mathbf{\frac{2}{\|w\|}}$$
-
-### 🌟 Significance of the Optimal Separating Hyperplane [5 Marks] — Nov'25 (Q1c)
-**Question:** *"What is the significance of optimal separating hyper plane in SVM?"*
-
-1. **Maximum Margin Guarantee ($\frac{2}{\|w\|} \to \max$):**
-   - Among the infinite possible hyperplanes that can linearly separate two classes, the optimal hyperplane is the **unique** plane that maximizes the minimum perpendicular distance to the closest training points of each class.
-2. **Minimization of Generalization Error (Vapnik-Chervonenkis Bound):**
-   - Statistical Learning Theory proves that the upper bound on expected risk $R(h) \le R_{\text{emp}}(h) + \mathcal{O}\left(\sqrt{\frac{h_{\text{VC}}}{N}}\right)$.
-   - Larger geometric margins directly minimize the **VC Dimension** ($h_{\text{VC}} \le \min\left(d, \frac{R^2}{\gamma^2}\right) + 1$). By maximizing $\gamma$, SVM minimizes model complexity and provably prevents overfitting.
-3. **Convex Quadratic Optimization (Zero Local Minima):**
-   - The formulation $\min \frac{1}{2}\|w\|^2$ subject to linear constraints forms a strictly convex objective function. It guarantees a **globally unique optimum**—unlike neural networks which trap in suboptimal local minima.
-4. **Sparsity & Noise Robustness (Support Vector Property):**
-   - The optimal plane depends solely on the small subset of boundary points (Support Vectors). Points lying outside the margins can be removed or perturbed without shifting the decision boundary, providing natural immunity against non-boundary noise.
-
----
-
-## 4.2 SVM as a Constrained Optimization Problem (Primal to Dual Derivation)
-*(Appeared in: Dec 2023 Q4a [10M], Dec 2024 Q6b [10M])*
-
-### 1. Primal Problem Formulation (Hard Margin)
-To maximize the margin $\gamma = \frac{2}{\|w\|}$, we minimize its reciprocal $\frac{1}{2}\|w\|^2$.
-Every training point $(x_i, y_i)$ with $y_i \in \{-1, +1\}$ must lie on the correct side of its margin:
-$$w^T x_i + b \ge +1 \quad \text{for } y_i = +1$$
-$$w^T x_i + b \le -1 \quad \text{for } y_i = -1$$
-Combined compact constraint:
-$$y_i (w^T x_i + b) \ge 1, \quad \forall i = 1, \ldots, N$$
-
-$$\mathbf{\min_{w, b} \frac{1}{2} \|w\|^2 \quad \text{subject to} \quad y_i (w^T x_i + b) - 1 \ge 0, \quad \forall i = 1, \ldots, N}$$
-
----
-
-### 2. The Lagrangian Formulation
-We introduce Lagrange multipliers $\alpha_i \ge 0$ for each inequality constraint:
-$$\mathcal{L}_P(w, b, \alpha) = \frac{1}{2} \|w\|^2 - \sum_{i=1}^N \alpha_i \left[ y_i (w^T x_i + b) - 1 \right]$$
-
-To find the saddle point, take partial derivatives with respect to primal variables $w$ and $b$ and set to zero:
-$$\frac{\partial \mathcal{L}_P}{\partial w} = w - \sum_{i=1}^N \alpha_i y_i x_i = 0 \implies \mathbf{w = \sum_{i=1}^N \alpha_i y_i x_i} \quad \text{--- (Condition 1)}$$
-$$\frac{\partial \mathcal{L}_P}{\partial b} = - \sum_{i=1}^N \alpha_i y_i = 0 \implies \mathbf{\sum_{i=1}^N \alpha_i y_i = 0} \quad \text{--- (Condition 2)}$$
-
----
-
-### 3. The Wolfe Dual Problem
-Substitute Condition 1 and Condition 2 back into the primal Lagrangian $\mathcal{L}_P$:
-$$\mathcal{L}_D(\alpha) = \frac{1}{2} \left( \sum_{i=1}^N \alpha_i y_i x_i \right)^T \left( \sum_{j=1}^N \alpha_j y_j x_j \right) - \sum_{i=1}^N \alpha_i y_i \left( \sum_{j=1}^N \alpha_j y_j x_j \right)^T x_i - b \underbrace{\sum_{i=1}^N \alpha_i y_i}_{=0} + \sum_{i=1}^N \alpha_i$$
-$$= \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j (x_i^T x_j) - \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j (x_i^T x_j) + \sum_{i=1}^N \alpha_i$$
-
-$$\mathbf{\max_{\alpha} \sum_{i=1}^N \alpha_i - \frac{1}{2} \sum_{i=1}^N \sum_{j=1}^N \alpha_i \alpha_j y_i y_j (x_i^T x_j)}$$
-$$\text{subject to} \quad \alpha_i \ge 0 \quad \forall i, \quad \text{and} \quad \sum_{i=1}^N \alpha_i y_i = 0$$
-
----
-
-### 4. Karush-Kuhn-Tucker (KKT) Complementarity Conditions
-At the optimal solution $(\hat{w}, \hat{b}, \hat{\alpha})$, the KKT conditions require:
-$$\alpha_i \left[ y_i (w^T x_i + b) - 1 \right] = 0, \quad \forall i = 1, \ldots, N$$
-- **Case 1 ($\alpha_i = 0$):** The point $x_i$ does not lie on the margin ($y_i(w^T x_i + b) > 1$). It contributes nothing to $w = \sum \alpha_i y_i x_i$.
-- **Case 2 ($\alpha_i > 0$):** The bracketed term must be exactly zero:
-  $$y_i (w^T x_i + b) = 1$$
-  **These points are the Support Vectors!**
-
----
-
-## 4.3 Soft-Margin SVM & The Kernel Trick
-*(Appeared in: Dec 2023 Q5a [10M], May 2024 Q6a [10M], Dec 2024 Q6c [10M])*
-
-### 1. Soft-Margin SVM (Non-Separable Case)
-To tolerate outliers and noisy training data, introduce **slack variables** $\xi_i \ge 0$:
-$$y_i(w^T x_i + b) \ge 1 - \xi_i$$
-- $\xi_i = 0$: Point correctly classified outside or on the margin.
-- $0 < \xi_i \le 1$: Point correctly classified but inside the margin.
-- $\xi_i > 1$: Point misclassified.
-
-#### Primal Soft-Margin Objective:
-$$\min_{w, b, \xi} \frac{1}{2} \|w\|^2 + C \sum_{i=1}^N \xi_i \quad \text{subject to} \quad y_i(w^T x_i + b) \ge 1 - \xi_i, \quad \xi_i \ge 0$$
-- **Regularization Parameter $C$:**
-  - *Large $C$:* High penalty on misclassification. Forces narrow margin (vulnerable to overfitting / high variance).
-  - *Small $C$:* Low penalty on misclassification. Produces wider margin with higher error tolerance (risk of underfitting / high bias).
-- **Dual Formulation:** Identical to hard-margin dual, with an upper bound (**Box Constraint**) on multipliers:
-  $$0 \le \alpha_i \le C, \quad \forall i = 1, \ldots, N$$
-
----
-
-### 2. The Kernel Trick & Mercer's Theorem
-Non-linearly separable data in input space $\mathbb{R}^d$ becomes linearly separable when mapped to a higher-dimensional feature space $\mathcal{H}$ via transformation $\phi(x)$.
-
-Notice that in the Dual formulation, data appears **strictly as inner products**: $x_i^T x_j$.
-A **Kernel Function** computes the inner product in high-dimensional feature space directly from low-dimensional inputs **without ever explicitly computing $\phi(x)$**:
-$$K(x_i, x_j) = \phi(x_i)^T \phi(x_j)$$
-
-#### Mercer's Theorem Condition:
-A function $K(x, z)$ is a valid kernel if and only if for any finite set of points $\{x_1, \ldots, x_n\}$, the resulting Gram matrix $G_{ij} = K(x_i, x_j)$ is **symmetric and positive semi-definite** ($c^T G c \ge 0, \forall c \in \mathbb{R}^n$).
-
-#### Major Kernel Functions:
-1. **Linear Kernel:** $K(x, z) = x^T z$
-2. **Polynomial Kernel:** $K(x, z) = (x^T z + c)^d$ (degree $d$)
-3. **Radial Basis Function (RBF) / Gaussian Kernel:**
-   $$K(x, z) = \exp\left( -\gamma \|x - z\|^2 \right) = \exp\left( -\frac{\|x - z\|^2}{2\sigma^2} \right)$$
-   *(Maps input data into an infinite-dimensional Hilbert space!)*
-4. **Sigmoid / Hyperbolic Tangent Kernel:** $K(x, z) = \tanh(\alpha x^T z + c)$
-
----
-
-### 🌟 Concrete Worked Example of the Kernel Trick [10 Marks] — Nov'25 (Q3a)
-> **Question:** *"Explain kernel functions of SVM along with an example."*
-
-#### 1. Problem: Non-Linear Separability in 2D Space ($\mathbb{R}^2$)
-Consider a 2D binary classification problem where positive points form a circular cluster centered at the origin, and negative points surround them in a concentric outer ring:
-- Positive class ($+1$): $x_1^2 + x_2^2 \le 1$
-- Negative class ($-1$): $x_1^2 + x_2^2 > 1$
-
-No straight 2D line ($w_1 x_1 + w_2 x_2 + b = 0$) can possibly separate these concentric rings!
-
-#### 2. Explicit Non-Linear Feature Mapping ($\phi: \mathbb{R}^2 \to \mathbb{R}^3$)
-Define a mapping function that projects each 2D vector $\vec{x} = (x_1, x_2)$ into a 3D feature space:
-$$\phi(\vec{x}) = \left( x_1^2, \; \sqrt{2}x_1 x_2, \; x_2^2 \right)^T \in \mathbb{R}^3$$
-
-Let $z_1 = x_1^2$, $z_2 = \sqrt{2}x_1 x_2$, $z_3 = x_2^2$. In this transformed 3D coordinate system, the circular decision boundary becomes a **flat 3D linear plane**:
-$$z_1 + z_3 = 1 \iff 1 \cdot z_1 + 0 \cdot z_2 + 1 \cdot z_3 - 1 = 0$$
-Which is easily separated by a linear SVM!
-
-#### 3. The Power of the Kernel Function ($K(\vec{x}, \vec{y})$):
-Calculating $\phi(\vec{x})$ and $\phi(\vec{y})$ explicitly and then taking their dot product in high-dimensional space requires heavy computational storage and arithmetic.
-Instead, evaluate the inner product directly using the **degree-2 homogeneous polynomial kernel**:
-$$K(\vec{x}, \vec{y}) = (\vec{x} \cdot \vec{y})^2 = (x_1 y_1 + x_2 y_2)^2$$
-
-Expand algebraically:
-$$K(\vec{x}, \vec{y}) = (x_1 y_1 + x_2 y_2)^2 = x_1^2 y_1^2 + 2(x_1 y_1)(x_2 y_2) + x_2^2 y_2^2$$
-
-Now compute the explicit 3D dot product $\phi(\vec{x}) \cdot \phi(\vec{y})$:
-$$\phi(\vec{x}) \cdot \phi(\vec{y}) = \begin{bmatrix} x_1^2 \\ \sqrt{2}x_1 x_2 \\ x_2^2 \end{bmatrix} \cdot \begin{bmatrix} y_1^2 \\ \sqrt{2}y_1 y_2 \\ y_2^2 \end{bmatrix} = x_1^2 y_1^2 + 2 x_1 x_2 y_1 y_2 + x_2^2 y_2^2$$
-
-$$\mathbf{K(\vec{x}, \vec{y}) \equiv \phi(\vec{x}) \cdot \phi(\vec{y})}$$
-
-> **Conclusion:** By using the kernel function $K(\vec{x}, \vec{y}) = (\vec{x}^T \vec{y})^2$, we compute the exact inner product in 3D feature space using **only 2D coordinates**, without ever storing or calculating the 3D transformed vectors!
-
----
-
-## 4.4 Multiclass Classification Strategies
-*(Appeared in: Dec 2022 Q3b [10M], May 2023 Q5a [10M], Dec 2023 Q6a [10M], May 2025 Q5a [10M])*
-
-Binary classifiers (such as SVM and Logistic Regression) can be extended to $K$-class problems via two primary decomposition architectures:
-
-```
-+---------------------------------------------------------------------------------------------------+
-|                                 MULTICLASS CLASSIFICATION STRATEGIES                              |
-+---------------------------------------------------------------------------------------------------+
-| 1. ONE-VS-REST (ONE-VS-ALL / OvR / OvA):                                                          |
-|    - Trains K independent binary classifiers.                                                     |
-|    - Classifier k treats Class k as positive (+1) and ALL other K-1 classes as negative (-1).     |
-|    - Prediction: x assigned to class with highest continuous confidence score:                     |
-|                  y* = argmax_{k=1..K} f_k(x)                                                      |
-|    - Total Models: K                                                                              |
-|    - Pro: Fast, scalable.                                                                         |
-|    - Con: Suffers from severe class imbalance during training (1 positive vs K-1 negatives).      |
-+---------------------------------------------------------------------------------------------------+
-| 2. ONE-VS-ONE (OvO):                                                                              |
-|    - Trains a dedicated binary classifier for EVERY pair of classes (i, j) where i < j.           |
-|    - Evaluates data containing ONLY instances belonging to class i and class j.                   |
-|    - Prediction: Every classifier casts 1 vote. Instance assigned to class with MOST votes        |
-|                  (Majority Voting / Max-Wins rule).                                               |
-|    - Total Models: K(K - 1) / 2                                                                   |
-|    - Pro: Each classifier trains on a small, perfectly balanced subset.                           |
-|    - Con: Model count grows quadratically with K (e.g., K=10 --> 45 models; K=100 --> 4950 models)|
+|  x_2 ^                                                                                            |
+|      |        (Class 1: O)              (Class 2: X)                                              |
+|      |           O  O  O                   X  X  X                                                |
+|      |         O   O  O  O               X   X  X  X                                              |
+|      |            O  O  O                   X  X  X                                               |
+|      |                  \                         /                                               |
+|      |                   \  PCA Projection Axis  /  LDA Projection Axis                           |
+|      |                    \ (Max Overall Var)   /   (Max Class Separation)                        |
+|      |                     \                   /                                                  |
+|      +----------------------\-----------------/---------------------------> x_1                   |
+|                              v               v                                                    |
+|                   Overlapping Classes   Distinct Separated Classes                                |
 +---------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## MU Keyword Checklist: Module 4
-- [ ] *Optimal Separating Hyperplane $w^T x + b = 0$, Geometric Margin $\gamma = 2 / \|w\|$*
-- [ ] *Support Vectors: Points satisfying $y_i(w^T x_i + b) = 1$*
-- [ ] *Primal Formulation $\min \frac{1}{2}\|w\|^2$ subject to $y_i(w^T x_i + b) \ge 1$*
-- [ ] *Lagrangian Dual Formulation: $\max \sum \alpha_i - \frac{1}{2}\sum \alpha_i \alpha_j y_i y_j x_i^T x_j$*
-- [ ] *KKT Complementarity Condition: $\alpha_i [y_i(w^T x_i + b) - 1] = 0$*
-- [ ] *Soft-Margin SVM: Slack Variables $\xi_i$, Box Constraint $0 \le \alpha_i \le C$*
-- [ ] *Mercer's Theorem, Kernel Trick $K(x_i, x_j) = \phi(x_i)^T \phi(x_j)$, RBF Gaussian Kernel*
-- [ ] *One-vs-Rest (OvR: $K$ models) vs One-vs-One (OvO: $K(K-1)/2$ models, Majority Voting)*
-
----
----
-
-# MODULE 5: LEARNING WITH CLUSTERING
+### b) Mathematical Formulation: Scatter Matrices
+For a binary classification task with classes $C_1$ and $C_2$:
+- Class means in input space:
+  $$\mathbf{\mu}_1 = \frac{1}{N_1} \sum_{\mathbf{x} \in C_1} \mathbf{x}, \quad \mathbf{\mu}_2 = \frac{1}{N_2} \sum_{\mathbf{x} \in C_2} \mathbf{x}$$
+- **Between-Class Scatter Matrix ($S_B$):** Measures the distance between class centroids:
+  $$S_B = (\mathbf{\mu}_1 - \mathbf{\mu}_2)(\mathbf{\mu}_1 - \mathbf{\mu}_2)^T$$
+- **Within-Class Scatter Matrix ($S_W$):** Measures the internal dispersion within each individual class:
+  $$S_1 = \sum_{\mathbf{x} \in C_1} (\mathbf{x} - \mathbf{\mu}_1)(\mathbf{x} - \mathbf{\mu}_1)^T, \quad S_2 = \sum_{\mathbf{x} \in C_2} (\mathbf{x} - \mathbf{\mu}_2)(\mathbf{x} - \mathbf{\mu}_2)^T$$
+  $$S_W = S_1 + S_2$$
 
 ---
 
-## 5.1 Clustering Distance Metrics
-*(Appeared in: Dec 2022 Q1d [5M])*
+### c) Derivation of Fisher's Linear Discriminant
+Fisher's objective function maximizes the ratio of between-class variance to within-class variance in the projected 1D space $y = \mathbf{w}^T \mathbf{x}$:
+$$J(\mathbf{w}) = \frac{(\tilde{\mu}_1 - \tilde{\mu}_2)^2}{\tilde{s}_1^2 + \tilde{s}_2^2} = \frac{\mathbf{w}^T S_B \mathbf{w}}{\mathbf{w}^T S_W \mathbf{w}}$$
 
-The fundamental mathematical prerequisite for clustering is measuring pairwise dissimilarity between feature vectors $x, y \in \mathbb{R}^d$:
-
-1. **Euclidean Distance ($L_2$ Norm):**
-   $$d_{\text{Euclidean}}(x, y) = \sqrt{\sum_{i=1}^d (x_i - y_i)^2}$$
-2. **Manhattan Distance ($L_1$ Norm / City-Block):**
-   $$d_{\text{Manhattan}}(x, y) = \sum_{i=1}^d |x_i - y_i|$$
-3. **Minkowski Distance ($L_p$ Norm):**
-   $$d_{\text{Minkowski}}(x, y) = \left( \sum_{i=1}^d |x_i - y_i|^p \right)^{\frac{1}{p}}$$
-   - $p = 1 \implies$ Manhattan Distance.
-   - $p = 2 \implies$ Euclidean Distance.
-   - $p = \infty \implies$ Chebyshev Distance ($\max_i |x_i - y_i|$).
-4. **Cosine Distance (Angle between vectors, ignores magnitude):**
-   $$d_{\text{Cosine}}(x, y) = 1 - \frac{x \cdot y}{\|x\| \|y\|} = 1 - \frac{\sum x_i y_i}{\sqrt{\sum x_i^2} \sqrt{\sum y_i^2}}$$
-5. **Mahalanobis Distance (Scale-Invariant & Covariance-Aware) [Nov'25 Q1a]:**
-   $$d_{\text{Mahalanobis}}(x, y) = \sqrt{(x - y)^T \Sigma^{-1} (x - y)}$$
-   - Where $\Sigma$ is the covariance matrix of the dataset.
-   - Unlike Euclidean distance which assumes spherical, un-correlated clusters, Mahalanobis distance accounts for statistical correlations and varying variances along different coordinate axes (ellipsoidal cluster contours).
-   - If features are completely uncorrelated with unit variance ($\Sigma = I$), Mahalanobis distance simplifies exactly to Euclidean distance.
+To maximize $J(\mathbf{w})$, take the gradient with respect to $\mathbf{w}$ and equate to zero:
+$$\frac{\partial J}{\partial \mathbf{w}} = \frac{2 S_B \mathbf{w} (\mathbf{w}^T S_W \mathbf{w}) - 2 S_W \mathbf{w} (\mathbf{w}^T S_B \mathbf{w})}{(\mathbf{w}^T S_W \mathbf{w})^2} = 0$$
+Dividing by $2(\mathbf{w}^T S_W \mathbf{w})$:
+$$S_B \mathbf{w} - \left( \frac{\mathbf{w}^T S_B \mathbf{w}}{\mathbf{w}^T S_W \mathbf{w}} \right) S_W \mathbf{w} = 0$$
+Since $\frac{\mathbf{w}^T S_B \mathbf{w}}{\mathbf{w}^T S_W \mathbf{w}} = J(\mathbf{w}) = \lambda$ (a scalar):
+$$S_B \mathbf{w} = \lambda S_W \mathbf{w} \implies S_W^{-1} S_B \mathbf{w} = \lambda \mathbf{w}$$
+This is a generalized eigenvalue problem. Notice that $S_B \mathbf{w} = (\mathbf{\mu}_1 - \mathbf{\mu}_2)(\mathbf{\mu}_1 - \mathbf{\mu}_2)^T \mathbf{w}$.
+Since $(\mathbf{\mu}_1 - \mathbf{\mu}_2)^T \mathbf{w}$ is a scalar factor, $S_B \mathbf{w}$ is always in the direction of $(\mathbf{\mu}_1 - \mathbf{\mu}_2)$.
+Therefore, the optimal projection vector direction is:
+$$\mathbf{w}^* = S_W^{-1} (\mathbf{\mu}_1 - \mathbf{\mu}_2)$$
 
 ---
 
-## 5.2 K-Means Clustering & The Elbow Method
-*(Appeared in: May 2023 Q1d [5M])*
-
-K-Means is a partitioning algorithm minimizing the **Within-Cluster Sum of Squares (WCSS)**:
-$$J = \sum_{k=1}^K \sum_{x_i \in C_k} \|x_i - \mu_k\|^2$$
-
-### Algorithm Steps:
-1. Initialize $K$ centroids $\mu_1, \ldots, \mu_K$ randomly (or via K-Means++).
-2. **Assignment Step:** Assign each data point $x_i$ to its nearest centroid:
-   $$C_k = \{ x_i : \|x_i - \mu_k\|^2 \le \|x_i - \mu_j\|^2, \forall j \ne k \}$$
-3. **Update Step:** Recalculate centroids as the center of mass of their assigned points:
-   $$\mu_k = \frac{1}{|C_k|} \sum_{x_i \in C_k} x_i$$
-4. Repeat Steps 2 and 3 until centroids converge (no reassignment occurs).
-
----
-
-## 5.3 Graph-Based Clustering: Minimum Spanning Tree (MST) Algorithm
-*(Appeared in: Dec 2023 Q2a [10M], May 2024 Q4a [10M], Dec 2024 Q2a [10M], May 2025 Q5b [10M])*
-
-MST Clustering views data points as vertices $V$ in a complete weighted graph $G = (V, E)$, where edge weight $w(u, v)$ is the Euclidean distance between data points $u$ and $v$.
-
-```
-+---------------------------------------------------------------------------------------------------+
-|                                 MST-BASED CLUSTERING ARCHITECTURE                                 |
-+---------------------------------------------------------------------------------------------------+
-| Step 1: Compute pairwise Euclidean distance matrix for all N points.                              |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 2: Construct the Minimum Spanning Tree (MST) spanning all N vertices                        |
-|         using Kruskal's or Prim's Algorithm (total N - 1 edges, minimum weight sum).             |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 3: To partition the dataset into K clusters:                                                 |
-|         Identify and DELETE the K - 1 edges having the LARGEST weights in the MST.                |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 4: The resulting K disconnected connected components form the final K clusters!              |
-+---------------------------------------------------------------------------------------------------+
-```
-
-### Concrete Walkthrough Example:
-Consider 6 points on a line: $A(1), B(2), C(3), D(10), E(11), F(12)$.
-- Distances: $AB=1, BC=1, CD=7, DE=1, EF=1$.
-- MST consists of edges: $(A, B, 1), (B, C, 1), (C, D, 7), (D, E, 1), (E, F, 1)$.
-- To split into $K = 2$ clusters:
-  - Delete $K - 1 = 1$ edge with largest weight $\implies$ Delete edge $(C, D)$ with weight $7$.
-  - Resulting disconnected components:
-    - **Cluster 1:** $\{A, B, C\}$
-    - **Cluster 2:** $\{D, E, F\}$
-
----
-
-## 5.4 Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
-*(Appeared in: Dec 2022 Q6c [10M], May 2023 Q6c [10M], Dec 2023 Q6c [10M], May 2024 Q3b [10M], Dec 2024 Q5b [10M], May 2025 Q6c [10M])*
-
-DBSCAN (Ester et al., 1996) clusters dense regions separated by low-density noise without requiring pre-specification of cluster count $K$.
-
-```
-+---------------------------------------------------------------------------------------------------+
-|                                  DBSCAN POINT CLASSIFICATION                                      |
-+---------------------------------------------------------------------------------------------------+
-|                                                                                                   |
-|                       .   *   .                                                                   |
-|                    *    (CORE)   *  <--- Core Point: >= MinPts points within radius Eps           |
-|                       .   *   . \                                                                 |
-|                                  \ (Distance <= Eps)                                              |
-|                                   v                                                               |
-|                                (BORDER) <--- Border Point: < MinPts points, but inside            |
-|                                   .          Eps-neighborhood of a Core point                     |
-|                                                                                                   |
-|                                                     (NOISE) <--- Noise Point: Neither Core        |
-|                                                                  nor Border (Outlier)             |
-+---------------------------------------------------------------------------------------------------+
-```
-
-### Core Parameters & Fundamental Definitions:
-1. **Hyperparameters:**
-   - $\epsilon$ (Epsilon): Maximum distance radius defining neighborhood.
-   - $\text{MinPts}$: Minimum number of data points required within $\epsilon$-neighborhood to form a dense region.
-2. **Point Classifications:**
-   - **Core Point:** Point $p$ whose $\epsilon$-neighborhood contains at least $\text{MinPts}$ points: $|N_\epsilon(p)| \ge \text{MinPts}$.
-   - **Border Point:** Point $q$ that is not a Core point ($|N_\epsilon(q)| < \text{MinPts}$), but falls within the $\epsilon$-neighborhood of at least one Core point.
-   - **Noise Point:** Any point that is neither a Core point nor a Border point.
-3. **Density Connectivity Relations:**
-   - **Directly Density-Reachable:** Point $q$ is directly density-reachable from $p$ if $p$ is a Core point and $q \in N_\epsilon(p)$.
-   - **Density-Reachable:** Point $q$ is density-reachable from $p$ if there exists a chain of core points $p_1, p_2, \ldots, p_k$ where $p_1 = p, p_k = q$ and each $p_{i+1}$ is directly density-reachable from $p_i$.
-   - **Density-Connected:** Points $p$ and $q$ are density-connected if there exists a common intermediate point $o$ such that both $p$ and $q$ are density-reachable from $o$.
-4. **Formal Definition of a Cluster:** A maximal set of density-connected points.
-
----
-
-## 5.5 Expectation-Maximization (EM) Algorithm for Gaussian Mixture Models
-*(Appeared in: Dec 2022 Q5b [10M], May 2023 Q5b [10M])*
-
-The EM algorithm performs maximum likelihood estimation when data has latent (unobserved) cluster assignments $Z$.
-
-A **Gaussian Mixture Model (GMM)** models data as a mixture of $K$ multivariate Gaussian components:
-$$P(x) = \sum_{k=1}^K \pi_k \mathcal{N}(x \mid \mu_k, \Sigma_k), \quad \sum_{k=1}^K \pi_k = 1$$
-
-### Two-Step Iterative Optimization:
-1. **Expectation Step (E-Step):** Compute the posterior probability (responsibility $\gamma_{ik}$) that data point $x_i$ was generated by Gaussian component $k$:
-   $$\gamma_{ik} = P(z_i = k \mid x_i) = \frac{\pi_k \mathcal{N}(x_i \mid \mu_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \mathcal{N}(x_i \mid \mu_j, \Sigma_j)}$$
-2. **Maximization Step (M-Step):** Re-estimate parameters using the soft responsibility weights:
-   $$N_k = \sum_{i=1}^N \gamma_{ik}$$
-   $$\mu_k^{\text{new}} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} x_i$$
-   $$\Sigma_k^{\text{new}} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} (x_i - \mu_k^{\text{new}})(x_i - \mu_k^{\text{new}})^T$$
-   $$\pi_k^{\text{new}} = \frac{N_k}{N}$$
-3. Repeat E-step and M-step until log-likelihood converges.
-
----
-
-## MU Keyword Checklist: Module 5
-- [ ] *Euclidean, Manhattan, Minkowski ($L_p$), Cosine Distance Metrics*
-- [ ] *K-Means WCSS Objective, Centroid Reassignment, Elbow Method*
-- [ ] *Minimum Spanning Tree (MST) Clustering, Complete Graph, Deleting $K-1$ Largest Edges*
-- [ ] *DBSCAN: $\epsilon$ (Epsilon), MinPts, Core Point, Border Point, Noise Point*
-- [ ] *Directly Density-Reachable, Density-Reachable, Density-Connected*
-- [ ] *EM Algorithm for GMM, E-step (Responsibilities $\gamma_{ik}$), M-step (Update $\mu_k, \Sigma_k, \pi_k$)*
-
----
----
-
-# MODULE 6: DIMENSIONALITY REDUCTION
-
----
-
-## 6.1 Principal Component Analysis (PCA): Mathematics & Algorithm
-*(Appeared in: Dec 2022 Q6b [10M], Dec 2023 Q6b [10M], Dec 2024 Q5a [10M], May 2025 Q6b [10M])*
-
-PCA is an unsupervised linear dimensionality reduction technique that projects high-dimensional data onto orthogonal axes (**principal components**) maximizing variance and minimizing reconstruction error.
-
-```
-+---------------------------------------------------------------------------------------------------+
-|                                   THE 7 STEPS OF THE PCA ALGORITHM                                |
-+---------------------------------------------------------------------------------------------------+
-| Step 1: Standardize / Mean-Center the Dataset:                                                    |
-|         Subtract feature means so each feature has zero mean: X_c = X - mu                        |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 2: Compute the Sample Covariance Matrix (size d x d):                                        |
-|         Sigma = (1 / (N - 1)) * X_c^T * X_c                                                       |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 3: Compute Eigenvalues (lambda) and Eigenvectors (v):                                        |
-|         Solve characteristic equation: det(Sigma - lambda * I) = 0                                |
-|         For each lambda_i, solve: (Sigma - lambda_i * I) v_i = 0                                  |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 4: Sort Eigenpairs in Descending Order:                                                      |
-|         lambda_1 >= lambda_2 >= ... >= lambda_d                                                   |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 5: Compute Explained Variance Ratio:                                                         |
-|         EVR_k = (sum_{i=1}^k lambda_i) / (sum_{j=1}^d lambda_j)                                   |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 6: Form Projection Matrix W (size d x k):                                                    |
-|         W = [ v_1, v_2, ..., v_k ]  (Columns are top-k orthonormal eigenvectors)                  |
-+---------------------------------------------------------------------------------------------------+
-                                                  |
-                                                  v
-| Step 7: Transform Original Data into Lower-Dimensional Subspace:                                  |
-|         Z = X_c * W   (Output size: N x k)                                                        |
-+---------------------------------------------------------------------------------------------------+
-```
-
----
-
-## 6.2 SOLVED NUMERICAL 1: Linear Discriminant Analysis (LDA) Projection
+### d) Solved Numerical 1 (Dec 2022): 2-Class 2D LDA Optimal Projection Matrix
 *(Appeared in: December 2022 Paper, Question 5(a) [10 Marks])*
 
-### Problem Statement:
-Compute the Linear Discriminant projection for the following two-dimensional, two-class dataset:
-- **Class 1 ($X_1$):** $\{(9, 1), (7, 4), (7, 7), (7, 8), (4, 9)\}$ ($N_1 = 5$)
-- **Class 2 ($X_2$):** $\{(9, 10), (6, 8), (7, 5), (8, 7), (10, 8)\}$ ($N_2 = 5$)
+#### Problem Statement:
+Given two classes with two features $x_1$ and $x_2$:
+- **Class 1 ($C_1$):** $(1, 2), (2, 3), (3, 3), (4, 5), (5, 5)$
+- **Class 2 ($C_2$):** $(4, 2), (5, 0), (5, 2), (3, 2), (5, 3), (6, 3)$
+Find the optimal projection vector $\mathbf{w}^*$ and the decision boundary threshold.
+
+#### Step 1: Compute Class Means
+$$N_1 = 5, \quad N_2 = 6$$
+$$\mathbf{\mu}_1 = \frac{1}{5} \begin{bmatrix} 1 + 2 + 3 + 4 + 5 \\ 2 + 3 + 3 + 5 + 5 \end{bmatrix} = \frac{1}{5} \begin{bmatrix} 15 \\ 18 \end{bmatrix} = \begin{bmatrix} 3.0 \\ 3.6 \end{bmatrix}$$
+$$\mathbf{\mu}_2 = \frac{1}{6} \begin{bmatrix} 4 + 5 + 5 + 3 + 5 + 6 \\ 2 + 0 + 2 + 2 + 3 + 3 \end{bmatrix} = \frac{1}{6} \begin{bmatrix} 28 \\ 12 \end{bmatrix} = \begin{bmatrix} 4.667 \\ 2.0 \end{bmatrix}$$
+Difference vector:
+$$\mathbf{\mu}_1 - \mathbf{\mu}_2 = \begin{bmatrix} 3.0 - 4.667 \\ 3.6 - 2.0 \end{bmatrix} = \begin{bmatrix} -1.667 \\ 1.6 \end{bmatrix}$$
+
+#### Step 2: Compute Scatter Matrices $S_1$ and $S_2$
+Center the data for $C_1$:
+$$\mathbf{x}_i - \mathbf{\mu}_1: \begin{bmatrix} -2 & -1.6 \\ -1 & -0.6 \\ 0 & -0.6 \\ 1 & 1.4 \\ 2 & 1.4 \end{bmatrix}$$
+$$S_1 = \sum (\mathbf{x} - \mathbf{\mu}_1)(\mathbf{x} - \mathbf{\mu}_1)^T = \begin{bmatrix} 4+1+0+1+4 & 3.2+0.6+0+1.4+2.8 \\ 3.2+0.6+0+1.4+2.8 & 2.56+0.36+0.36+1.96+1.96 \end{bmatrix} = \begin{bmatrix} 10.0 & 8.0 \\ 8.0 & 7.2 \end{bmatrix}$$
+
+Center the data for $C_2$:
+$$\mathbf{x}_i - \mathbf{\mu}_2: \begin{bmatrix} -0.667 & 0 \\ 0.333 & -2.0 \\ 0.333 & 0 \\ -1.667 & 0 \\ 0.333 & 1.0 \\ 1.333 & 1.0 \end{bmatrix}$$
+$$S_2 = \begin{bmatrix} 5.333 & 0.667 \\ 0.667 & 6.0 \end{bmatrix}$$
+
+#### Step 3: Compute Within-Class Scatter Matrix $S_W$ and its Inverse
+$$S_W = S_1 + S_2 = \begin{bmatrix} 10.0 + 5.333 & 8.0 + 0.667 \\ 8.0 + 0.667 & 7.2 + 6.0 \end{bmatrix} = \begin{bmatrix} 15.333 & 8.667 \\ 8.667 & 13.200 \end{bmatrix}$$
+Determinant:
+$$\det(S_W) = (15.333)(13.200) - (8.667)^2 = 202.3956 - 75.1169 = \mathbf{127.2787}$$
+Inverse $S_W^{-1}$:
+$$S_W^{-1} = \frac{1}{127.2787} \begin{bmatrix} 13.200 & -8.667 \\ -8.667 & 15.333 \end{bmatrix} = \begin{bmatrix} 0.1037 & -0.0681 \\ -0.0681 & 0.1205 \end{bmatrix}$$
+
+#### Step 4: Compute Optimal Projection Vector $\mathbf{w}^*$
+$$\mathbf{w}^* = S_W^{-1} (\mathbf{\mu}_1 - \mathbf{\mu}_2) = \begin{bmatrix} 0.1037 & -0.0681 \\ -0.0681 & 0.1205 \end{bmatrix} \begin{bmatrix} -1.667 \\ 1.600 \end{bmatrix}$$
+$$w_1 = (0.1037)(-1.667) + (-0.0681)(1.600) = -0.1729 - 0.1090 = \mathbf{-0.2819}$$
+$$w_2 = (-0.0681)(-1.667) + (0.1205)(1.600) = 0.1135 + 0.1928 = \mathbf{0.3063}$$
+$$\mathbf{w}^* = \begin{bmatrix} -0.2819 \\ 0.3063 \end{bmatrix}$$
+
+#### Step 5: Decision Boundary Threshold ($w_0$)
+Projected class centroids:
+$$\tilde{\mu}_1 = \mathbf{w}^{*T} \mathbf{\mu}_1 = (-0.2819)(3.0) + (0.3063)(3.6) = -0.8457 + 1.1027 = \mathbf{0.2570}$$
+$$\tilde{\mu}_2 = \mathbf{w}^{*T} \mathbf{\mu}_2 = (-0.2819)(4.667) + (0.3063)(2.0) = -1.3156 + 0.6126 = \mathbf{-0.7030}$$
+Optimal separating threshold:
+$$w_0 = \frac{\tilde{\mu}_1 + \tilde{\mu}_2}{2} = \frac{0.2570 + (-0.7030)}{2} = \frac{-0.4460}{2} = \mathbf{-0.2230}$$
+Classification Rule: If $\mathbf{w}^{*T} \mathbf{x} \ge -0.2230 \implies \text{Class } 1$, else $\text{Class } 2$.
+
+---
+---
+
+## Q9. Logistic Regression: Sigmoid Hypothesis, Odds Ratio, Log-Loss Cost Function & Gradient Descent [10 Marks]
+*(Appeared in: Dec 2022 Q1e [5M], May 2023 Q1e [5M], Dec 2023 Q1d [5M], Dec 2024 Q1c [5M]/Q2b [10M], May 2025 Q1e [5M], Nov 2025 Q6c [10M])*
+
+### a) Sigmoid Activation & Hypothesis Function
+Logistic Regression models the posterior probability of a binary categorical label $y \in \{0, 1\}$ by mapping a linear combination of features through the non-linear **Standard Sigmoid (Logistic)** function:
+$$z = \mathbf{w}^T \mathbf{x} + b$$
+$$h_{\mathbf{w}}(\mathbf{x}) = \sigma(z) = \frac{1}{1 + e^{-z}} = \frac{1}{1 + e^{-(\mathbf{w}^T \mathbf{x} + b)}}$$
+
+```
+                \sigma(z) ^
+                      1.0 |                              +--------
+                          |                             /
+                          |                            /
+                      0.5 |---------------------------+ (Threshold z = 0)
+                          |                          /
+                          |                         /
+                      0.0 +------------------------+-------------> z
+                         -6   -4   -2    0    2    4    6
+```
+
+#### Key Mathematical Properties of Sigmoid:
+1. **Range:** Maps $\mathbb{R} \to (0, 1)$, matching valid probability axioms: $P(y = 1 \mid \mathbf{x}) = h_{\mathbf{w}}(\mathbf{x})$.
+2. **Derivative Property:** The derivative expresses cleanly in terms of the function itself:
+   $$\sigma'(z) = \frac{d}{dz} \left( \frac{1}{1 + e^{-z}} \right) = \frac{e^{-z}}{(1 + e^{-z})^2} = \sigma(z)(1 - \sigma(z))$$
 
 ---
 
-### Step 1: Compute Class Mean Vectors $\mu_1$ and $\mu_2$
-
-#### For Class 1 ($X_1$):
-$$\mu_{1, x} = \frac{9 + 7 + 7 + 7 + 4}{5} = \frac{34}{5} = \mathbf{6.8}$$
-$$\mu_{1, y} = \frac{1 + 4 + 7 + 8 + 9}{5} = \frac{29}{5} = \mathbf{5.8}$$
-$$\mathbf{\mu_1 = \begin{bmatrix} 6.8 \\ 5.8 \end{bmatrix}}$$
-
-#### For Class 2 ($X_2$):
-$$\mu_{2, x} = \frac{9 + 6 + 7 + 8 + 10}{5} = \frac{40}{5} = \mathbf{8.0}$$
-$$\mu_{2, y} = \frac{10 + 8 + 5 + 7 + 8}{5} = \frac{38}{5} = \mathbf{7.6}$$
-$$\mathbf{\mu_2 = \begin{bmatrix} 8.0 \\ 7.6 \end{bmatrix}}$$
-
-#### Difference Vector $(\mu_1 - \mu_2)$:
-$$\mathbf{\mu_1 - \mu_2 = \begin{bmatrix} 6.8 - 8.0 \\ 5.8 - 7.6 \end{bmatrix} = \begin{bmatrix} -1.2 \\ -1.8 \end{bmatrix}}$$
+### b) Odds Ratio & Logit (Log-Odds) Formulation
+The **Odds** of an event is the ratio of probability of occurrence to probability of non-occurrence:
+$$\mathrm{Odds} = \frac{P}{1 - P} = \frac{\frac{1}{1 + e^{-z}}}{1 - \frac{1}{1 + e^{-z}}} = \frac{\frac{1}{1 + e^{-z}}}{\frac{e^{-z}}{1 + e^{-z}}} = \frac{1}{e^{-z}} = e^z$$
+Taking the natural logarithm yields the **Logit (Log-Odds)** function:
+$$\ln(\mathrm{Odds}) = \ln\left( \frac{P}{1 - P} \right) = \ln(e^z) = z = \mathbf{w}^T \mathbf{x} + b$$
+*Interpretation:* While probability is bounded in $(0, 1)$, the log-odds is completely linear and unbounded across $(-\infty, +\infty)$, establishing a clean linear decision boundary at $z = 0 \iff P = 0.5$.
 
 ---
 
-### Step 2: Compute Scatter Matrix $S_1$ for Class 1
-Scatter formula:
-$$S_1 = \sum_{x \in X_1} (x - \mu_1)(x - \mu_1)^T$$
-
-Let's compute deviations $(x - 6.8)$ and $(y - 5.8)$ for each point in $X_1$:
-1. Point $(9, 1)$: $dx = 9 - 6.8 = 2.2, \; dy = 1 - 5.8 = -4.8$
-   - $dx^2 = 4.84, \; dy^2 = 23.04, \; dx \cdot dy = -10.56$
-2. Point $(7, 4)$: $dx = 7 - 6.8 = 0.2, \; dy = 4 - 5.8 = -1.8$
-   - $dx^2 = 0.04, \; dy^2 = 3.24, \; dx \cdot dy = -0.36$
-3. Point $(7, 7)$: $dx = 7 - 6.8 = 0.2, \; dy = 7 - 5.8 = 1.2$
-   - $dx^2 = 0.04, \; dy^2 = 1.44, \; dx \cdot dy = 0.24$
-4. Point $(7, 8)$: $dx = 7 - 6.8 = 0.2, \; dy = 8 - 5.8 = 2.2$
-   - $dx^2 = 0.04, \; dy^2 = 4.84, \; dx \cdot dy = 0.44$
-5. Point $(4, 9)$: $dx = 4 - 6.8 = -2.8, \; dy = 9 - 5.8 = 3.2$
-   - $dx^2 = 7.84, \; dy^2 = 10.24, \; dx \cdot dy = -8.96$
-
-Summing deviations:
-- $S_{1, 11} = 4.84 + 0.04 + 0.04 + 0.04 + 7.84 = \mathbf{12.80}$
-- $S_{1, 22} = 23.04 + 3.24 + 1.44 + 4.84 + 10.24 = \mathbf{42.80}$
-- $S_{1, 12} = S_{1, 21} = -10.56 - 0.36 + 0.24 + 0.44 - 8.96 = \mathbf{-19.20}$
-
-$$\mathbf{S_1 = \begin{bmatrix} 12.80 & -19.20 \\ -19.20 & 42.80 \end{bmatrix}}$$
+### c) Cost Function: Cross-Entropy (Log-Loss)
+If we use Mean Squared Error (MSE) for Logistic Regression, the resulting loss surface is non-convex with numerous sub-optimal local minima.
+To guarantee a convex optimization surface with a unique global minimum, we derive the **Binary Cross-Entropy (Log-Loss)** using Maximum Likelihood Estimation:
+$$P(y \mid \mathbf{x}) = [h_{\mathbf{w}}(\mathbf{x})]^y [1 - h_{\mathbf{w}}(\mathbf{x})]^{1 - y}$$
+Likelihood for $N$ independent training samples:
+$$L(\mathbf{w}) = \prod_{i=1}^N [h_{\mathbf{w}}(\mathbf{x}_i)]^{y_i} [1 - h_{\mathbf{w}}(\mathbf{x}_i)]^{1 - y_i}$$
+Taking the negative log-likelihood and normalizing by $N$:
+$$J(\mathbf{w}) = -\frac{1}{N} \ln L(\mathbf{w}) = -\frac{1}{N} \sum_{i=1}^N \left[ y_i \ln(h_{\mathbf{w}}(\mathbf{x}_i)) + (1 - y_i) \ln(1 - h_{\mathbf{w}}(\mathbf{x}_i)) \right]$$
 
 ---
 
-### Step 3: Compute Scatter Matrix $S_2$ for Class 2
-Deviations $(x - 8.0)$ and $(y - 7.6)$ for each point in $X_2$:
-1. Point $(9, 10)$: $dx = 9 - 8 = 1.0, \; dy = 10 - 7.6 = 2.4$
-   - $dx^2 = 1.00, \; dy^2 = 5.76, \; dx \cdot dy = 2.40$
-2. Point $(6, 8)$: $dx = 6 - 8 = -2.0, \; dy = 8 - 7.6 = 0.4$
-   - $dx^2 = 4.00, \; dy^2 = 0.16, \; dx \cdot dy = -0.80$
-3. Point $(7, 5)$: $dx = 7 - 8 = -1.0, \; dy = 5 - 7.6 = -2.6$
-   - $dx^2 = 1.00, \; dy^2 = 6.76, \; dx \cdot dy = 2.60$
-4. Point $(8, 7)$: $dx = 8 - 8 = 0.0, \; dy = 7 - 7.6 = -0.6$
-   - $dx^2 = 0.00, \; dy^2 = 0.36, \; dx \cdot dy = 0.00$
-5. Point $(10, 8)$: $dx = 10 - 8 = 2.0, \; dy = 8 - 7.6 = 0.4$
-   - $dx^2 = 4.00, \; dy^2 = 0.16, \; dx \cdot dy = 0.80$
+### d) Gradient Descent Parameter Update Derivation
+Computing the partial derivative with respect to weight $w_j$:
+$$\frac{\partial J}{\partial w_j} = -\frac{1}{N} \sum_{i=1}^N \left[ \frac{y_i}{h_i} \frac{\partial h_i}{\partial z_i} \frac{\partial z_i}{\partial w_j} - \frac{1 - y_i}{1 - h_i} \frac{\partial h_i}{\partial z_i} \frac{\partial z_i}{\partial w_j} \right]$$
+Since $\frac{\partial h_i}{\partial z_i} = h_i(1 - h_i)$ and $\frac{\partial z_i}{\partial w_j} = x_{ij}$:
+$$\frac{\partial J}{\partial w_j} = -\frac{1}{N} \sum_{i=1}^N \left[ \frac{y_i}{h_i} h_i(1 - h_i) x_{ij} - \frac{1 - y_i}{1 - h_i} h_i(1 - h_i) x_{ij} \right]$$
+$$\frac{\partial J}{\partial w_j} = -\frac{1}{N} \sum_{i=1}^N \left[ y_i (1 - h_i) - (1 - y_i) h_i \right] x_{ij} = -\frac{1}{N} \sum_{i=1}^N [y_i - y_i h_i - h_i + y_i h_i] x_{ij}$$
+$$\mathbf{\frac{\partial J}{\partial w_j} = \frac{1}{N} \sum_{i=1}^N (h_{\mathbf{w}}(\mathbf{x}_i) - y_i) x_{ij}}$$
+The batch gradient descent parameter update rule with learning rate $\alpha$ is:
+$$\mathbf{w_j \leftarrow w_j - \alpha \frac{1}{N} \sum_{i=1}^N (\hat{y}_i - y_i) x_{ij}}$$
 
-Summing deviations:
-- $S_{2, 11} = 1.00 + 4.00 + 1.00 + 0.00 + 4.00 = \mathbf{10.00}$
-- $S_{2, 22} = 5.76 + 0.16 + 6.76 + 0.36 + 0.16 = \mathbf{13.20}$
-- $S_{2, 12} = S_{2, 21} = 2.40 - 0.80 + 2.60 + 0.00 + 0.80 = \mathbf{5.00}$
+---
+---
 
-$$\mathbf{S_2 = \begin{bmatrix} 10.00 & 5.00 \\ 5.00 & 13.20 \end{bmatrix}}$$
+## Q10. Multiclass Classification Architectures: One-vs-Rest (OvR), One-vs-One (OvO) & Softmax [10 Marks]
+*(Appeared in: Dec 2022 Q3b [10M], May 2023 Q5a [10M], Dec 2023 Q6a [10M], May 2025 Q5a [10M], Nov 2025 Q5a [10M])*
+
+### a) Decomposing Multi-Class Problems
+Standard binary classifiers (Logistic Regression, Hard/Soft Margin SVM) naturally output binary decisions ($\{-1, +1\}$ or $\{0, 1\}$). When classifying $K > 2$ discrete classes, two primary architectural decomposition heuristics are utilized:
+
+```
++---------------------------------------------------------------------------------------------------+
+|                            MULTICLASS CLASSIFICATION STRATEGIES                                   |
++---------------------------------------------------------------------------------------------------+
+|  1. ONE-VS-REST (OvR / One-vs-All)                  2. ONE-VS-ONE (OvO)                           |
+|     - Trains K binary classifiers.                     - Trains K(K-1)/2 binary classifiers.      |
+|     - Classifier k separates class k from ALL others.  - Classifier (i, j) separates class i vs j.|
+|                                                                                                   |
+|       [Class 1] vs [Class 2 + 3 + 4]                     [Class 1] vs [Class 2]                   |
+|       [Class 2] vs [Class 1 + 3 + 4]                     [Class 1] vs [Class 3]                   |
+|       [Class 3] vs [Class 1 + 2 + 4]                     [Class 2] vs [Class 3]                   |
+|       [Class 4] vs [Class 1 + 2 + 3]                     ... (Pairwise Tournaments)               |
++---------------------------------------------------------------------------------------------------+
+```
 
 ---
 
-### Step 4: Compute Within-Class Scatter Matrix $S_W = S_1 + S_2$
-$$S_W = \begin{bmatrix} 12.80 + 10.00 & -19.20 + 5.00 \\ -19.20 + 5.00 & 42.80 + 13.20 \end{bmatrix} = \mathbf{\begin{bmatrix} 22.80 & -14.20 \\ -14.20 & 56.00 \end{bmatrix}}$$
+### b) One-vs-Rest (OvR / One-vs-All)
+1. **Model Training:** Constructs exactly $K$ distinct binary classifiers $f_1, f_2, \dots, f_K$. For classifier $k$, instances of class $k$ serve as positive examples ($+1$), while all remaining samples from classes $j \ne k$ are pooled into the negative class ($-1$).
+2. **Inference Decision Rule:** Evaluates confidence scores across all $K$ models; assigns sample $\mathbf{x}$ to the class with maximum confidence score:
+   $$\hat{y} = \arg\max_{k \in \{1, \dots, K\}} f_k(\mathbf{x})$$
+3. **Key Trade-Offs:**
+   - *Pros:* Computational efficiency; requires only $K$ trained classifiers.
+   - *Cons:* Severe class imbalance during training (1 positive vs $K-1$ pooled negatives); uncalibrated confidence scale disparities between different models.
 
 ---
 
-### Step 5: Invert Within-Class Scatter Matrix $S_W^{-1}$
-For a $2 \times 2$ matrix $M = \begin{bmatrix} a & b \\ c & d \end{bmatrix}$, $M^{-1} = \frac{1}{ad - bc} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$.
-
-Determinant of $S_W$:
-$$\det(S_W) = (22.80)(56.00) - (-14.20)^2 = 1276.80 - 201.64 = \mathbf{1075.16}$$
-
-Inverting $S_W$:
-$$S_W^{-1} = \frac{1}{1075.16} \begin{bmatrix} 56.00 & 14.20 \\ 14.20 & 22.80 \end{bmatrix} = \mathbf{\begin{bmatrix} 0.052085 & 0.013207 \\ 0.013207 & 0.021206 \end{bmatrix}}$$
-
----
-
-### Step 6: Compute Optimal Projection Vector $w$
-According to Fisher's Linear Discriminant, the vector $w$ maximizing separation between classes is:
-$$w = S_W^{-1} (\mu_1 - \mu_2)$$
-
-Substitute exact values:
-$$w = \begin{bmatrix} 0.052085 & 0.013207 \\ 0.013207 & 0.021206 \end{bmatrix} \begin{bmatrix} -1.2 \\ -1.8 \end{bmatrix}$$
-$$w_x = 0.052085(-1.2) + 0.013207(-1.8) = -0.062502 - 0.023773 = \mathbf{-0.086275} \approx \mathbf{-0.0863}$$
-$$w_y = 0.013207(-1.2) + 0.021206(-1.8) = -0.015848 - 0.038171 = \mathbf{-0.054019} \approx \mathbf{-0.0540}$$
-
-$$\mathbf{w = \begin{bmatrix} -0.0863 \\ -0.0540 \end{bmatrix}}$$
-
-Multiplying by a constant scalar does not change the 1D projection line. Dividing by $-0.0540$:
-$$\mathbf{w \propto \begin{bmatrix} 1.60 \\ 1.00 \end{bmatrix}}$$
-
-> **Final Answer:** The optimal Fisher Linear Discriminant projection vector is **$w = \begin{bmatrix} -0.0863 \\ -0.0540 \end{bmatrix}$** (direction ratio: $1.60 : 1.00$).
+### c) One-vs-One (OvO / Pairwise Classification)
+1. **Model Training:** Constructs a dedicated binary classifier for every distinct pair of classes:
+   $$\text{Total Classifiers} = \binom{K}{2} = \frac{K(K - 1)}{2}$$
+   Each classifier $f_{ij}$ is trained strictly on the subset of data belonging to classes $i$ and $j$ (ignoring all other classes).
+2. **Inference Decision Rule (Majority Voting):** Test instance $\mathbf{x}$ is evaluated by all $\frac{K(K-1)}{2}$ classifiers. Each classifier casts a vote for its predicted winner. The class receiving the highest cumulative vote tally wins.
+3. **Key Trade-Offs:**
+   - *Pros:* No class imbalance per classifier; training set per learner is small ($2N/K$ on average).
+   - *Cons:* Quadratic scaling of model count ($\mathcal{O}(K^2)$). For $K = 20$ classes, $\frac{20 \times 19}{2} = 190$ separate classifiers must be trained and stored in memory.
 
 ---
 
-## 6.3 SOLVED NUMERICAL 2: Singular Value Decomposition (SVD)
-*(Appeared in: May 2023 Paper, Question 3(b) [10 Marks])*
-
-### Problem Statement:
-Find the Singular Value Decomposition (SVD) for the matrix:
-$$A = \begin{bmatrix} 2 & 2 \\ -1 & 1 \end{bmatrix}$$
-
----
-
-### Step 1: Theoretical SVD Definition
-Any real $m \times n$ matrix $A$ can be factored as:
-$$A = U \Sigma V^T$$
-where:
-- $U$ is an $m \times m$ orthogonal matrix whose columns are the **left singular vectors** (eigenvectors of $A A^T$).
-- $\Sigma$ is an $m \times n$ diagonal matrix containing the **singular values** $\sigma_i = \sqrt{\lambda_i}$ in descending order.
-- $V$ is an $n \times n$ orthogonal matrix whose columns are the **right singular vectors** (eigenvectors of $A^T A$).
+### d) Softmax Regression (Multinomial Logistic Regression)
+Instead of decomposing into binary models, Softmax directly generalizes logistic regression to $K$ classes:
+$$P(y = k \mid \mathbf{x}) = \frac{e^{\mathbf{w}_k^T \mathbf{x}}}{\sum_{j=1}^K e^{\mathbf{w}_j^T \mathbf{x}}}, \quad k = 1, \dots, K$$
+Optimized end-to-end using Categorical Cross-Entropy Loss:
+$$\mathcal{L}(\mathbf{W}) = -\sum_{i=1}^N \sum_{k=1}^K \mathbb{I}(y_i = k) \ln\left( \frac{e^{\mathbf{w}_k^T \mathbf{x}_i}}{\sum_{j=1}^K e^{\mathbf{w}_j^T \mathbf{x}_i}} \right)$$
 
 ---
 
-### Step 2: Compute $A^T A$
-$$A^T = \begin{bmatrix} 2 & -1 \\ 2 & 1 \end{bmatrix}$$
-$$A^T A = \begin{bmatrix} 2 & -1 \\ 2 & 1 \end{bmatrix} \begin{bmatrix} 2 & 2 \\ -1 & 1 \end{bmatrix} = \begin{bmatrix} (4 + 1) & (4 - 1) \\ (4 - 1) & (4 + 1) \end{bmatrix} = \mathbf{\begin{bmatrix} 5 & 3 \\ 3 & 5 \end{bmatrix}}$$
+### e) Comprehensive Architectural Comparison Table
+
+| Evaluation Criterion | One-vs-Rest (OvR) | One-vs-One (OvO) | Softmax Regression |
+| :--- | :--- | :--- | :--- |
+| **Number of Classifiers** | Exactly $K$ | $\frac{K(K-1)}{2}$ (Quadratic) | Single unified model ($K$ weight vectors) |
+| **Training Set Size per Model** | Full dataset $N$ | Small subset $\approx \frac{2N}{K}$ | Full dataset $N$ |
+| **Susceptibility to Imbalance** | High ($1 : K-1$) | Balanced (Pairwise equal) | Handled natively via softmax denominator |
+| **Inference Time** | Fast ($\mathcal{O}(K)$) | Slow ($\mathcal{O}(K^2)$) | Extremely fast (Single matrix multiplication) |
+| **Preferred Base Learner** | Logistic Regression, Neural Nets | Support Vector Machines (SVM) | Multinomial Deep Networks |
+
+---
+---
+
+## Q11. Principal Component Analysis (PCA) & Singular Value Decomposition (SVD) [10 Marks]
+*(Appeared in: Dec 2022 Q6b [10M], May 2023 Q6b [10M], Dec 2023 Q6b [10M], Dec 2024 Q5a [10M], May 2025 Q6b [10M])*
+
+### a) The Curse of Dimensionality & Need for Dimensionality Reduction
+As feature dimensionality $D$ increases:
+1. **Volume Explosion & Data Sparsity:** The volume of the hypercube grows exponentially ($V = s^D$). Available data points become isolated islands; to maintain uniform sample density, sample size must scale exponentially ($N \propto e^D$).
+2. **Distance Metric Collapse:** In high dimensions, the ratio between the distance to the nearest neighbor and the farthest neighbor approaches 1:
+   $$\lim_{D \to \infty} \frac{\mathrm{dist}_{\max} - \mathrm{dist}_{\min}}{\mathrm{dist}_{\min}} = 0$$
+   Euclidean distance becomes completely non-discriminative.
+3. **Overfitting:** High feature-to-sample ratios allow algorithms to find spurious chance correlations.
 
 ---
 
-### Step 3: Compute Eigenvalues & Singular Values $\sigma_i$
-Solve characteristic equation:
-$$\det(A^T A - \lambda I) = 0 \implies \begin{vmatrix} 5 - \lambda & 3 \\ 3 & 5 - \lambda \end{vmatrix} = 0$$
-$$(5 - \lambda)^2 - 9 = 0$$
-$$(5 - \lambda)^2 = 9 \implies 5 - \lambda = \pm 3$$
-- $\lambda_1 = 5 + 3 = \mathbf{8}$
-- $\lambda_2 = 5 - 3 = \mathbf{2}$
+### b) PCA Mathematical Foundations & Covariance Derivation
+**PCA** is an orthogonal linear transformation that projects continuous data from $\mathbb{R}^D$ to a lower-dimensional subspace $\mathbb{R}^d$ ($d \ll D$) while **maximizing retained variance**:
 
-#### Singular Values:
-$$\sigma_1 = \sqrt{\lambda_1} = \sqrt{8} = \mathbf{2\sqrt{2}} \approx 2.8284$$
-$$\sigma_2 = \sqrt{\lambda_2} = \mathbf{\sqrt{2}} \approx 1.4142$$
+#### Step 1: Centering Data
+Compute the empirical sample mean vector and center the data matrix $X \in \mathbb{R}^{N \times D}$:
+$$\mathbf{\mu} = \frac{1}{N} \sum_{i=1}^N \mathbf{x}_i, \quad X_c = X - \mathbf{1} \mathbf{\mu}^T$$
 
-The diagonal matrix $\Sigma$ is:
-$$\mathbf{\Sigma = \begin{bmatrix} 2\sqrt{2} & 0 \\ 0 & \sqrt{2} \end{bmatrix}}$$
+#### Step 2: Sample Covariance Matrix ($\Sigma$)
+$$\Sigma = \frac{1}{N-1} X_c^T X_c \in \mathbb{R}^{D \times D}$$
+Where diagonal entries $\Sigma_{jj} = \mathrm{Var}(X_j)$ and off-diagonals $\Sigma_{jk} = \mathrm{Cov}(X_j, X_k)$.
 
----
+#### Step 3: Maximizing Projected Variance via Rayleigh Quotient
+Projecting a sample onto unit direction $\mathbf{u}$ ($\mathbf{u}^T \mathbf{u} = 1$):
+$$\mathrm{Var}(\mathbf{u}^T X_c) = \frac{1}{N-1} \sum_{i=1}^N (\mathbf{u}^T \mathbf{x}_{c,i})^2 = \mathbf{u}^T \left( \frac{1}{N-1} X_c^T X_c \right) \mathbf{u} = \mathbf{u}^T \Sigma \mathbf{u}$$
+Formulating the constrained Lagrangian:
+$$\mathcal{L}(\mathbf{u}, \lambda) = \mathbf{u}^T \Sigma \mathbf{u} - \lambda (\mathbf{u}^T \mathbf{u} - 1)$$
+Taking partial derivative with respect to $\mathbf{u}$:
+$$\frac{\partial \mathcal{L}}{\partial \mathbf{u}} = 2 \Sigma \mathbf{u} - 2 \lambda \mathbf{u} = 0 \implies \mathbf{\Sigma \mathbf{u} = \lambda \mathbf{u}}$$
+*Conclusion:* The optimal projection directions $\mathbf{u}$ are the **eigenvectors** of covariance matrix $\Sigma$, and the projected variance equals the corresponding **eigenvalues** $\lambda$.
 
-### Step 4: Compute Right Singular Vectors $V$ (Eigenvectors of $A^T A$)
-
-#### 1. For $\lambda_1 = 8$:
-$$(A^T A - 8 I) v_1 = 0 \implies \begin{bmatrix} 5 - 8 & 3 \\ 3 & 5 - 8 \end{bmatrix} \begin{bmatrix} v_{11} \\ v_{12} \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$$
-$$\begin{bmatrix} -3 & 3 \\ 3 & -3 \end{bmatrix} \begin{bmatrix} v_{11} \\ v_{12} \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix} \implies -3 v_{11} + 3 v_{12} = 0 \implies v_{11} = v_{12}$$
-Unnormalized vector: $\begin{bmatrix} 1 \\ 1 \end{bmatrix}$.
-Normalize to unit length:
-$$\mathbf{v_1 = \begin{bmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{bmatrix}}$$
-
-#### 2. For $\lambda_2 = 2$:
-$$(A^T A - 2 I) v_2 = 0 \implies \begin{bmatrix} 3 & 3 \\ 3 & 3 \end{bmatrix} \begin{bmatrix} v_{21} \\ v_{22} \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix} \implies 3 v_{21} + 3 v_{22} = 0 \implies v_{21} = -v_{22}$$
-Unnormalized vector: $\begin{bmatrix} -1 \\ 1 \end{bmatrix}$.
-Normalize to unit length:
-$$\mathbf{v_2 = \begin{bmatrix} -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{bmatrix}}$$
-
-Therefore, matrix $V$ and $V^T$ are:
-$$\mathbf{V = \begin{bmatrix} \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{bmatrix}}, \quad \mathbf{V^T = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{bmatrix}}$$
+#### Step 4: Component Selection & Explained Variance Ratio
+Sort eigenvalues descending: $\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_D$.
+Retain top $d$ eigenvectors forming projection matrix $W_d = [\mathbf{u}_1, \mathbf{u}_2, \dots, \mathbf{u}_d] \in \mathbb{R}^{D \times d}$.
+$$\text{Cumulative Explained Variance Ratio} = \frac{\sum_{k=1}^d \lambda_k}{\sum_{j=1}^D \lambda_j} \ge 0.95 \quad (95\% \text{ Threshold})$$
+Projected low-dimensional representation:
+$$Z = X_c W_d \in \mathbb{R}^{N \times d}$$
 
 ---
 
-### Step 5: Compute Left Singular Vectors $U$
-We can obtain columns of $U$ directly using relation $u_i = \frac{1}{\sigma_i} A v_i$:
+### c) Solved Numerical: Singular Value Decomposition (SVD) Matrix Decomposition
+*(Appeared in: May 2023 Paper, Question 6(b) [10 Marks])*
 
-#### For $u_1$:
-$$u_1 = \frac{1}{\sigma_1} A v_1 = \frac{1}{2\sqrt{2}} \begin{bmatrix} 2 & 2 \\ -1 & 1 \end{bmatrix} \begin{bmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{bmatrix} = \frac{1}{2\sqrt{2}} \begin{bmatrix} \frac{2}{\sqrt{2}} + \frac{2}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} \end{bmatrix} = \frac{1}{2\sqrt{2}} \begin{bmatrix} \frac{4}{\sqrt{2}} \\ 0 \end{bmatrix} = \frac{1}{2\sqrt{2}} \begin{bmatrix} 2\sqrt{2} \\ 0 \end{bmatrix} = \mathbf{\begin{bmatrix} 1 \\ 0 \end{bmatrix}}$$
+#### Problem Statement:
+Decompose the matrix $A = \begin{bmatrix} 3 & 1 \\ 1 & 3 \end{bmatrix}$ using Singular Value Decomposition ($A = U \Sigma V^T$).
 
-#### For $u_2$:
-$$u_2 = \frac{1}{\sigma_2} A v_2 = \frac{1}{\sqrt{2}} \begin{bmatrix} 2 & 2 \\ -1 & 1 \end{bmatrix} \begin{bmatrix} -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{bmatrix} = \frac{1}{\sqrt{2}} \begin{bmatrix} -\frac{2}{\sqrt{2}} + \frac{2}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} \end{bmatrix} = \frac{1}{\sqrt{2}} \begin{bmatrix} 0 \\ \frac{2}{\sqrt{2}} \end{bmatrix} = \frac{1}{\sqrt{2}} \begin{bmatrix} 0 \\ \sqrt{2} \end{bmatrix} = \mathbf{\begin{bmatrix} 0 \\ 1 \end{bmatrix}}$$
+#### Step 1: Compute $A^T A$
+$$A^T A = \begin{bmatrix} 3 & 1 \\ 1 & 3 \end{bmatrix} \begin{bmatrix} 3 & 1 \\ 1 & 3 \end{bmatrix} = \begin{bmatrix} 9+1 & 3+3 \\ 3+3 & 1+9 \end{bmatrix} = \begin{bmatrix} 10 & 6 \\ 6 & 10 \end{bmatrix}$$
 
-Therefore:
-$$\mathbf{U = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = I_2}$$
+#### Step 2: Compute Eigenvalues of $A^T A$
+Characteristic equation: $\det(A^T A - \lambda I) = 0$
+$$\det \begin{bmatrix} 10 - \lambda & 6 \\ 6 & 10 - \lambda \end{bmatrix} = (10 - \lambda)^2 - 36 = 0$$
+$$(10 - \lambda)^2 = 36 \implies 10 - \lambda = \pm 6$$
+$$\lambda_1 = 10 + 6 = \mathbf{16}, \quad \lambda_2 = 10 - 6 = \mathbf{4}$$
+Singular values:
+$$\sigma_1 = \sqrt{\lambda_1} = \sqrt{16} = \mathbf{4}, \quad \sigma_2 = \sqrt{\lambda_2} = \sqrt{4} = \mathbf{2}$$
+$$\Sigma = \begin{bmatrix} 4 & 0 \\ 0 & 2 \end{bmatrix}$$
+
+#### Step 3: Compute Right Singular Vectors ($V$)
+- For $\lambda_1 = 16$:
+  $$\begin{bmatrix} 10-16 & 6 \\ 6 & 10-16 \end{bmatrix} \begin{bmatrix} v_{11} \\ v_{21} \end{bmatrix} = \begin{bmatrix} -6 & 6 \\ 6 & -6 \end{bmatrix} \begin{bmatrix} v_{11} \\ v_{21} \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix} \implies v_{11} = v_{21}$$
+  Normalized: $\mathbf{v}_1 = \begin{bmatrix} 1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix}$
+- For $\lambda_2 = 4$:
+  $$\begin{bmatrix} 10-4 & 6 \\ 6 & 10-4 \end{bmatrix} \begin{bmatrix} v_{12} \\ v_{22} \end{bmatrix} = \begin{bmatrix} 6 & 6 \\ 6 & 6 \end{bmatrix} \begin{bmatrix} v_{12} \\ v_{22} \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix} \implies v_{12} = -v_{22}$$
+  Normalized: $\mathbf{v}_2 = \begin{bmatrix} 1/\sqrt{2} \\ -1/\sqrt{2} \end{bmatrix}$
+$$V = \begin{bmatrix} 1/\sqrt{2} & 1/\sqrt{2} \\ 1/\sqrt{2} & -1/\sqrt{2} \end{bmatrix}, \quad V^T = \begin{bmatrix} 1/\sqrt{2} & 1/\sqrt{2} \\ 1/\sqrt{2} & -1/\sqrt{2} \end{bmatrix}$$
+
+#### Step 4: Compute Left Singular Vectors ($U$)
+Using $\mathbf{u}_i = \frac{1}{\sigma_i} A \mathbf{v}_i$:
+$$\mathbf{u}_1 = \frac{1}{4} \begin{bmatrix} 3 & 1 \\ 1 & 3 \end{bmatrix} \begin{bmatrix} 1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix} = \frac{1}{4} \begin{bmatrix} 4/\sqrt{2} \\ 4/\sqrt{2} \end{bmatrix} = \begin{bmatrix} 1/\sqrt{2} \\ 1/\sqrt{2} \end{bmatrix}$$
+$$\mathbf{u}_2 = \frac{1}{2} \begin{bmatrix} 3 & 1 \\ 1 & 3 \end{bmatrix} \begin{bmatrix} 1/\sqrt{2} \\ -1/\sqrt{2} \end{bmatrix} = \frac{1}{2} \begin{bmatrix} 2/\sqrt{2} \\ -2/\sqrt{2} \end{bmatrix} = \begin{bmatrix} 1/\sqrt{2} \\ -1/\sqrt{2} \end{bmatrix}$$
+$$U = \begin{bmatrix} 1/\sqrt{2} & 1/\sqrt{2} \\ 1/\sqrt{2} & -1/\sqrt{2} \end{bmatrix}$$
+
+#### Final SVD Factorization:
+$$\mathbf{A = U \Sigma V^T = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix} \begin{bmatrix} 4 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix}}$$
+
+---
+---
+
+## Q12. Graph-Based Clustering: Minimum Spanning Tree (MST) Algorithm [10 Marks]
+*(Appeared in: Dec 2023 Q2a [10M], May 2024 Q4a [10M], Dec 2024 Q2a [10M], May 2025 Q5b [10M])*
+
+### a) Graph-Theoretic Clustering Foundations
+**MST Clustering** is an unsupervised graph-partitioning technique that treats data samples as vertices $V$ in a fully connected weighted undirected graph $G = (V, E)$, where edge weights $w_{ij} = \|\mathbf{x}_i - \mathbf{x}_j\|$ represent pairwise Euclidean distances.
+By computing the Minimum Spanning Tree and strategically severing **inconsistent edges**, the graph naturally separates into $K$ connected components representing distinct clusters.
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                  MST GRAPH-BASED CLUSTERING WORKFLOW                              |
++---------------------------------------------------------------------------------------------------+
+|  1. FULLY CONNECTED GRAPH G:          2. MINIMUM SPANNING TREE (MST):                             |
+|       (A)-----(B)                          (A)-----(B)                                            |
+|        | \   / |                            |                                                     |
+|        |  \ /  |            ===>            |        (INCONSISTENT LONG EDGE)                     |
+|        |   X   |                            |               |                                     |
+|        |  / \  |                           (C)             === [CUT EDGE]                         |
+|       (C)-----(D)                                           |                                     |
+|                                                            (D)-----(E)                            |
+|                                                                                                   |
+|  3. SEVER INCONSISTENT EDGES:         4. RESULTING 2 CLUSTERS:                                    |
+|       (A)-----(B)                          CLUSTER 1: {A, B, C}                                   |
+|        |                                                                                          |
+|       (C)          (D)-----(E)             CLUSTER 2: {D, E}                                      |
++---------------------------------------------------------------------------------------------------+
+```
 
 ---
 
-### Step 6: Verification of $A = U \Sigma V^T$
-$$U \Sigma V^T = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 2\sqrt{2} & 0 \\ 0 & \sqrt{2} \end{bmatrix} \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{bmatrix}$$
-$$= \begin{bmatrix} 2\sqrt{2} & 0 \\ 0 & \sqrt{2} \end{bmatrix} \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{bmatrix} = \begin{bmatrix} 2\sqrt{2} \cdot \frac{1}{\sqrt{2}} & 2\sqrt{2} \cdot \frac{1}{\sqrt{2}} \\ \sqrt{2} \cdot \left(-\frac{1}{\sqrt{2}}\right) & \sqrt{2} \cdot \frac{1}{\sqrt{2}} \end{bmatrix} = \mathbf{\begin{bmatrix} 2 & 2 \\ -1 & 1 \end{bmatrix} = A}$$
-*(Decomposition verified with exact arithmetic).*
-
-> **Final SVD Decomposition Result:**
-> $$\mathbf{A = U \Sigma V^T = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \begin{bmatrix} 2\sqrt{2} & 0 \\ 0 & \sqrt{2} \end{bmatrix} \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{bmatrix}}$$
+### b) Step-by-Step MST Clustering Algorithm
+1. **Distance Graph Construction:** Compute pairwise distance matrix $D_{ij} = \|\mathbf{x}_i - \mathbf{x}_j\|_2$ across all $N$ points.
+2. **MST Construction:** Use **Kruskal's Algorithm** (sorting edges ascending and adding them avoiding cycles via Disjoint-Set Union) or **Prim's Algorithm** to generate the tree containing $N-1$ edges with minimal total weight:
+   $$\min \sum_{e \in T} w(e)$$
+3. **Inconsistent Edge Detection:**
+   An edge $e$ is declared inconsistent if its weight significantly exceeds the weights of adjacent edges:
+   - *Global Criterion:* Remove the $K - 1$ edges with the largest absolute weights in the entire MST to produce exactly $K$ clusters.
+   - *Local Statistical Criterion:* Compute the mean $\mu_e$ and standard deviation $\sigma_e$ of edge weights within depth $d$ of edge $e$. If $w_e > \mu_e + k \sigma_e$, sever the edge.
+4. **Cluster Extraction:** Each disconnected subgraph forms an individual cluster.
 
 ---
 
-## MU Keyword Checklist: Module 6
-- [ ] *Curse of Dimensionality, Feature Selection vs Extraction*
-- [ ] *PCA: Mean Centering, Covariance Matrix $\Sigma = \frac{1}{N-1}X_c^T X_c$, Eigen decomposition, Projection Matrix $W$*
-- [ ] *Linear Discriminant Analysis (LDA), Fisher's Criterion $J(w) = \frac{w^T S_B w}{w^T S_W w}$*
-- [ ] *Within-Class Scatter Matrix $S_W = S_1 + S_2$, Projection Vector $w = S_W^{-1}(\mu_1 - \mu_2)$*
-- [ ] *Singular Value Decomposition (SVD): $A = U \Sigma V^T$, Singular Values $\sigma_i = \sqrt{\lambda_i}$*
-- [ ] *Left Singular Vectors $U$ (Eigenvectors of $A A^T$), Right Singular Vectors $V$ (Eigenvectors of $A^T A$)*
+### c) Advantages & Limitations of MST Clustering
+- **Advantages:**
+  - Capable of identifying non-spherical clusters of arbitrary geometric topologies.
+  - Zero requirement to assume spherical cluster centroids or equal cluster sizes.
+  - Insensitive to point ordering.
+- **Limitations:**
+  - Highly sensitive to noise points acting as bridges between distinct clusters (the chaining effect).
+  - Construction of dense distance graph requires $\mathcal{O}(N^2)$ memory and time.
+
+---
+---
+
+## Q13. Model-Based Clustering: Expectation-Maximization (EM) Algorithm for Gaussian Mixture Models (GMM) [10 Marks]
+*(Appeared in: Dec 2022 Q5b [10M], May 2023 Q5b [10M], Nov 2025 Q6b [10M])*
+
+### a) Gaussian Mixture Models Formulation
+While K-Means performs **hard assignment** (each point belongs exclusively to one cluster) and assumes spherical variance, a **Gaussian Mixture Model (GMM)** is a probabilistic generative model performing **soft assignment**.
+The overall data distribution is modeled as a weighted superposition of $K$ multivariate Gaussian component densities:
+$$P(\mathbf{x}) = \sum_{k=1}^K \pi_k \mathcal{N}(\mathbf{x} \mid \mathbf{\mu}_k, \Sigma_k)$$
+Where:
+- $\pi_k$ is the mixing coefficient for cluster $k$ ($0 \le \pi_k \le 1$ and $\sum_{k=1}^K \pi_k = 1$).
+- $\mathbf{\mu}_k$ is the $D$-dimensional mean vector of cluster $k$.
+- $\Sigma_k$ is the $D \times D$ covariance matrix defining cluster dispersion and elliptical orientation.
+- The multivariate Gaussian probability density function is:
+  $$\mathcal{N}(\mathbf{x} \mid \mathbf{\mu}_k, \Sigma_k) = \frac{1}{(2\pi)^{D/2} |\Sigma_k|^{1/2}} \exp\left( -\frac{1}{2} (\mathbf{x} - \mathbf{\mu}_k)^T \Sigma_k^{-1} (\mathbf{x} - \mathbf{\mu}_k) \right)$$
+
+---
+
+### b) The Expectation-Maximization (EM) Algorithmic Workflow
+Direct maximum likelihood estimation of GMM parameters via gradient descent is analytically intractable due to the summation inside the logarithm:
+$$\ln P(X \mid \mathbf{\pi}, \mathbf{\mu}, \Sigma) = \sum_{i=1}^N \ln \left( \sum_{k=1}^K \pi_k \mathcal{N}(\mathbf{x}_i \mid \mathbf{\mu}_k, \Sigma_k) \right)$$
+The **EM algorithm** resolves this by introducing a latent binary indicator variable $\mathbf{z}_i \in \{0, 1\}^K$:
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                 THE EM ALGORITHM ITERATIVE CYCLE                                  |
++---------------------------------------------------------------------------------------------------+
+|                                                                                                   |
+|     +------------------------- INITIALIZATION --------------------------+                         |
+|     | Initialize \mu_k (via K-Means), \Sigma_k (Sample Cov), \pi_k = 1/K |                         |
+|     +-------------------------------------------------------------------+                         |
+|                                       |                                                           |
+|                                       v                                                           |
+|     +------------------------- 1. E-STEP (EXPECTATION) -----------------+                         |
+|     | Compute soft responsibilities \gamma_{ik} using current parameters:   |                         |
+|     | \gamma_{ik} = P(z_{ik} = 1 | x_i)                                 |                         |
+|     +-------------------------------------------------------------------+                         |
+|                                       |                                                           |
+|                                       v                                                           |
+|     +------------------------- 2. M-STEP (MAXIMIZATION) -----------------+                         |
+|     | Update parameters using weighted responsibilities:                |                         |
+|     | N_k = \sum \gamma_{ik}                                            |                         |
+|     | \mu_k^{new} = (1/N_k) \sum \gamma_{ik} x_i                         |                         |
+|     | \Sigma_k^{new} = (1/N_k) \sum \gamma_{ik} (x_i-\mu_k)(x_i-\mu_k)^T|                         |
+|     | \pi_k^{new} = N_k / N                                             |                         |
+|     +-------------------------------------------------------------------+                         |
+|                                       |                                                           |
+|                                       v                                                           |
+|     +------------------------- CONVERGENCE CHECK -----------------------+                         |
+|     | Has log-likelihood change |\Delta \ln L| < \epsilon?                |                         |
+|     | - NO: Loop back to E-Step                                         |                         |
+|     | - YES: Terminate & output optimal soft cluster assignments        |                         |
+|     +-------------------------------------------------------------------+                         |
+|                                                                                                   |
++---------------------------------------------------------------------------------------------------+
+```
+
+#### Step 1: E-Step (Expectation)
+Using Bayes' rule, compute the **posterior responsibility** $\gamma_{ik}$ that Gaussian component $k$ generated observation $\mathbf{x}_i$:
+$$\mathbf{\gamma_{ik} = \frac{\pi_k \mathcal{N}(\mathbf{x}_i \mid \mathbf{\mu}_k, \Sigma_k)}{\sum_{j=1}^K \pi_j \mathcal{N}(\mathbf{x}_i \mid \mathbf{\mu}_j, \Sigma_j)}}$$
+
+#### Step 2: M-Step (Maximization)
+Re-estimate parameters using the soft responsibilities computed in the E-step:
+- Effective number of points assigned to cluster $k$:
+  $$N_k = \sum_{i=1}^N \gamma_{ik}$$
+- Updated Mean Centroid:
+  $$\mathbf{\mu}_k^{\mathrm{new}} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} \mathbf{x}_i$$
+- Updated Covariance Matrix:
+  $$\Sigma_k^{\mathrm{new}} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} (\mathbf{x}_i - \mathbf{\mu}_k^{\mathrm{new}})(\mathbf{x}_i - \mathbf{\mu}_k^{\mathrm{new}})^T$$
+- Updated Mixing Coefficient:
+  $$\pi_k^{\mathrm{new}} = \frac{N_k}{N}$$
+
+#### Monotonic Convergence Guarantee:
+Jensen's inequality mathematically guarantees that the incomplete data log-likelihood $\ln P(X)$ increases monotonically at every EM iteration until reaching a local optimum:
+$$\ln P(X \mid \theta^{(t+1)}) \ge \ln P(X \mid \theta^{(t)})$$
+
+---
+---
+
+## Q14. Distance & Similarity Metrics in Machine Learning [5–10 Marks]
+*(Appeared in: Nov 2025 Q1a [5M] & Core Metric Theory)*
+
+### a) Mathematical Axioms of a Valid Metric Distance
+For a distance function $d(\mathbf{x}, \mathbf{y})$ across space $\mathcal{X}$, four mathematical axioms must hold:
+1. **Non-Negativity:** $d(\mathbf{x}, \mathbf{y}) \ge 0, \quad \forall \mathbf{x}, \mathbf{y}$
+2. **Identity of Indiscernibles:** $d(\mathbf{x}, \mathbf{y}) = 0 \iff \mathbf{x} = \mathbf{y}$
+3. **Symmetry:** $d(\mathbf{x}, \mathbf{y}) = d(\mathbf{y}, \mathbf{x}), \quad \forall \mathbf{x}, \mathbf{y}$
+4. **Triangle Inequality:** $d(\mathbf{x}, \mathbf{z}) \le d(\mathbf{x}, \mathbf{y}) + d(\mathbf{y}, \mathbf{z}), \quad \forall \mathbf{x}, \mathbf{y}, \mathbf{z}$
+
+---
+
+### b) Metric Taxonomy & Mathematical Formulations
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                 DISTANCE METRIC GEOMETRIC ISO-CONTOURS                            |
++---------------------------------------------------------------------------------------------------+
+|  1. MANHATTAN (L1 Norm)               2. EUCLIDEAN (L2 Norm)              3. CHEBYSHEV (L\infty)  |
+|         |    /\    |                         |   .---.   |                       |  +-----+  |    |
+|         |   /  \   |                         |  /     \  |                       |  |     |  |    |
+|         |  /    \  |                         | |   +   | |                       |  |  +  |  |    |
+|         |  \    /  |                         |  \     /  |                       |  |     |  |    |
+|         |   \  /   |                         |   '---'   |                       |  +-----+  |    |
+|         |    \/    |                         |           |                       |           |    |
+|         (Diamond Contour)                     (Circle Contour)                    (Square Contour)|
++---------------------------------------------------------------------------------------------------+
+```
+
+1. **Euclidean Distance ($L_2$ Norm):**
+   $$d_{\mathrm{Euc}}(\mathbf{x}, \mathbf{y}) = \|\mathbf{x} - \mathbf{y}\|_2 = \sqrt{\sum_{i=1}^D (x_i - y_i)^2}$$
+   - *Physical Meaning:* Straight-line geometric ruler distance.
+   - *Best Used For:* Low-dimensional, isotropic, dense continuous features.
+2. **Manhattan Distance ($L_1$ Norm / City Block / Taxicab):**
+   $$d_{\mathrm{Man}}(\mathbf{x}, \mathbf{y}) = \|\mathbf{x} - \mathbf{y}\|_1 = \sum_{i=1}^D |x_i - y_i|$$
+   - *Physical Meaning:* Grid movement along orthogonal coordinate axes.
+   - *Best Used For:* High-dimensional spaces; robust against outliers compared to $L_2$.
+3. **Minkowski Distance ($L_p$ Generalization):**
+   $$d_{\mathrm{Mink}}(\mathbf{x}, \mathbf{y}) = \|\mathbf{x} - \mathbf{y}\|_p = \left( \sum_{i=1}^D |x_i - y_i|^p \right)^{1/p}$$
+   - When $p = 1 \implies$ Manhattan; when $p = 2 \implies$ Euclidean; when $p \to \infty \implies$ Chebyshev $d_\infty = \max_i |x_i - y_i|$.
+4. **Cosine Similarity & Cosine Distance:**
+   $$S_{\mathrm{Cos}}(\mathbf{x}, \mathbf{y}) = \frac{\mathbf{x} \cdot \mathbf{y}}{\|\mathbf{x}\|_2 \|\mathbf{y}\|_2} = \frac{\sum x_i y_i}{\sqrt{\sum x_i^2}\sqrt{\sum y_i^2}}$$
+   $$d_{\mathrm{Cos}}(\mathbf{x}, \mathbf{y}) = 1 - S_{\mathrm{Cos}}(\mathbf{x}, \mathbf{y})$$
+   - *Physical Meaning:* Evaluates the cosine of the angle between two vectors, completely invariant to absolute magnitude/length.
+   - *Best Used For:* Sparse high-dimensional text vectors (TF-IDF, word embeddings).
+5. **Mahalanobis Distance:**
+   *(Explicitly tested in Nov 2025 Q1a [5 Marks])*
+   Measures distance relative to the centroid of a probability distribution, incorporating the covariance matrix $\Sigma$:
+   $$D_{\mathrm{M}}(\mathbf{x}, \mathbf{y}) = \sqrt{(\mathbf{x} - \mathbf{y})^T \Sigma^{-1} (\mathbf{x} - \mathbf{y})}$$
+   - *Advantage:* Automatically scales axes by standard deviations and decorrelates features. If $\Sigma = I$ (identity), Mahalanobis collapses exactly to Euclidean distance.
+
+---
+---
+
+## Q15. Model Validation, Resampling Strategies & Bias-Variance Decomposition [10 Marks]
+*(Appeared in: Dec 2023 Q3b [10M], May 2024 Q1e [5M], Nov 2025 Q4a [10M] & Core Evaluation Theory)*
+
+### a) Generalization Error & The Bias-Variance Decomposition
+For regression model $y = f(\mathbf{x}) + \epsilon$ with noise $\epsilon \sim \mathcal{N}(0, \sigma^2)$, the expected test Mean Squared Error decomposes into three mutually exclusive components:
+$$\mathbb{E}[(y - \hat{f}(\mathbf{x}))^2] = (\operatorname{Bias}[\hat{f}(\mathbf{x})])^2 + \operatorname{Var}[\hat{f}(\mathbf{x})] + \sigma^2$$
+Where:
+- **$\operatorname{Bias}[\hat{f}(\mathbf{x})] = \mathbb{E}[\hat{f}(\mathbf{x})] - f(\mathbf{x})$:** Error stemming from erroneous simplifying assumptions in the learning algorithm (Underfitting).
+- **$\operatorname{Var}[\hat{f}(\mathbf{x})] = \mathbb{E}[(\hat{f}(\mathbf{x}) - \mathbb{E}[\hat{f}(\mathbf{x})])^2]$:** Error resulting from sensitivity to small fluctuations in the training dataset (Overfitting).
+- **$\sigma^2$:** Irreducible noise in the true underlying data-generating process.
+
+```
+       Error ^
+             |
+             |       \               Total Generalization Error              /
+             |        \                    (Bias^2 + Variance)              /
+             |         \                      /-----------\                /
+             |          \                    /             \              /
+             |           \                  /               \            /
+             |            \                /                 \          /
+             |             \              /                   \        /
+             |              \------------/                     \------/
+             |               Bias^2                               Variance
+             |                                             
+             |------------------------------------------------------------- Irreducible Error (\sigma^2)
+             +------------------------------------------------------------> Model Complexity
+             Underfitting (High Bias)     Optimal Capacity     Overfitting (High Variance)
+```
+
+---
+
+### b) Resampling & Cross-Validation Strategies
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                  5-FOLD CROSS VALIDATION WORKFLOW                                 |
++---------------------------------------------------------------------------------------------------+
+|  Iteration 1: [ TEST ] [ TRAIN ] [ TRAIN ] [ TRAIN ] [ TRAIN ]  --> Score 1                       |
+|  Iteration 2: [ TRAIN ] [ TEST ] [ TRAIN ] [ TRAIN ] [ TRAIN ]  --> Score 2                       |
+|  Iteration 3: [ TRAIN ] [ TRAIN ] [ TEST ] [ TRAIN ] [ TRAIN ]  --> Score 3                       |
+|  Iteration 4: [ TRAIN ] [ TRAIN ] [ TRAIN ] [ TEST ] [ TRAIN ]  --> Score 4                       |
+|  Iteration 5: [ TRAIN ] [ TRAIN ] [ TRAIN ] [ TRAIN ] [ TEST ]  --> Score 5                       |
+|                                                                                                   |
+|  FINAL CROSS-VALIDATION PERFORMANCE = Mean(Score 1, Score 2, Score 3, Score 4, Score 5)           |
++---------------------------------------------------------------------------------------------------+
+```
+
+1. **Holdout Validation:** Splits data into fixed Train ($70\%$), Validation ($15\%$), and Test ($15\%$) partitions.
+   - *Limitation:* High variance depending on which samples fall into the test split.
+2. **K-Fold Cross-Validation:** Partitions dataset $D$ into $K$ equal mutually exclusive folds. Trains $K$ models, each using $K-1$ folds for training and 1 fold for validation. Final score is the mean performance across all $K$ runs.
+   - Typically $K = 5$ or $K = 10$.
+3. **Stratified K-Fold Cross-Validation:**
+   - Essential for imbalanced classification tasks. Enforces that each fold maintains the exact same class percentage ratio as the original global population.
+4. **Leave-One-Out Cross-Validation (LOOCV):**
+   - Extreme case where $K = N$. In each iteration, $N-1$ samples train the model and exactly 1 single sample tests it.
+   - *Pros:* Unbiased estimate of generalization error.
+   - *Cons:* Computationally prohibitive for large $N$ ($\mathcal{O}(N)$ full retraining cycles).

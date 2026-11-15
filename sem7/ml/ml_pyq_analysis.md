@@ -80,27 +80,30 @@ Machine Learning in Mumbai University Semester 7 follows a structured 6-module c
 
 ---
 
-## 3. High-Priority Preparation Tiers (7-Cycle Calibrated)
+## 3. High-Priority Preparation Tiers (7-Cycle Calibrated Masterclass Index)
 
-### Tier 1: Non-Negotiable Core (Guarantees 60+ Marks)
-1. **Linear Regression Derivations & Solved Numericals (10 Marks):**
-   - OLS formulation: $Y = aX + C$ or $Y = \beta_1 X + \beta_0$.
-   - **Nov'25 Numerical:** Month 1-5 vs Expenditure ($12, 19, 29, 37, 45$), estimate Month 6 $\implies Y(6) = 53.6$ thousand.
-   - Dec'23 BMI-Cholesterol, May'25 Exam Scores, May'24 Mass-Time.
-2. **Performance Evaluation Metrics & Confusion Matrix (5-10 Marks):**
-   - Formulas: Accuracy, Precision, Recall, Specificity, F1-Score.
-   - **Nov'25 Numerical:** 50 Grant Proposals (Actual vs Predicted: TP=20, FN=5, FP=10, TN=15) $\implies$ Accuracy=70%, Precision=66.67%, Recall=80%, F1=0.7273.
-3. **Decision Tree Construction & Impurity Metrics (5-10 Marks):**
-   - Entropy: $H(D) = -\sum p_i \log_2 p_i$, Gini: $\text{Gini}(D) = 1 - \sum p_i^2$.
-   - Solved root node selections across 4 distinct dataset variations.
-4. **Support Vector Machines (SVM) (10 Marks):**
-   - Margin maximization, Primal optimization, Lagrangian dual, KKT conditions, Slack variables $\xi_i$, Kernel functions (Linear, Polynomial, RBF/Gaussian, Sigmoid).
-5. **DBSCAN Clustering (10 Marks):**
-   - Parameters ($\epsilon$, $\text{MinPts}$), Core points, Border points, Noise points, Density-reachability vs Density-connectivity.
-6. **Ensemble Methods: Random Forest & XGBoost (10 Marks):**
-   - Bagging vs Boosting vs Stacking. Random Forest subspace sampling, XGBoost gradient tree boosting objective function and split scoring.
-7. **Dimensionality Reduction: LDA & PCA (10 Marks):**
-   - LDA Fisher criterion $J(w) = \frac{w^T S_B w}{w^T S_W w}$. PCA covariance eigen-decomposition.
+### 🔴 Tier 1: 100% Guaranteed Non-Negotiable Core (Guarantees 60+ Marks)
+*(Available in Part 1 Masterclass)*
+- **Q1. Simple Linear Regression:** Theory, OLS Derivations, Terminology (Scatter plot, Residuals, Best-fit line), Evaluation Metrics ($R^2$, MAE, MSE, RMSE), and **4 Solved Numericals** (Nov'25 Month vs Expenditure, Dec'23 BMI-Cholesterol, May'25 Exam Score, May'24 Mass-Time).
+- **Q2. Decision Trees:** Foundations, Splitting Criteria (Entropy, Information Gain, Gini Impurity), ID3 vs CART, Pre/Post-Pruning, and **4 Solved Root Node Numericals** (Nov'25/Dec'22 Car Stolen, May'23 Stock Trend, May'24 Corporate Profit, Dec'24 Automotive).
+- **Q3. Classification Performance Metrics:** $2 \times 2$ Confusion Matrix, Accuracy, Precision, Recall, Specificity, F1-Score, and **Solved Numerical for 50 Grant Proposals (Nov'25)**.
+- **Q4. Support Vector Machines (SVM):** Optimal Separating Hyperplane, Margin Maximization, Primal Formulation, Slack Variables $\xi_i$, Dual Lagrangian, Mercer's Kernels, and **Worked Example of Polynomial Kernel $\mathbb{R}^2 \to \mathbb{R}^3$ (Nov'25)**.
+- **Q5. Ensemble Learning Paradigms:** Bagging vs Boosting vs Stacking, Random Forest (Subspace sampling, OOB error), AdaBoost Formulation, and **XGBoost Second-Order Taylor Objective (Nov'25)**.
+- **Q6. Density-Based Clustering (DBSCAN):** Parameters ($\epsilon$, $\text{MinPts}$), Core vs Border vs Noise points, Density Reachability vs Connectivity, and K-Means vs DBSCAN comparison.
+- **Q7. ML Lifecycle & Applications:** Learning Paradigms (Supervised, Unsupervised, Semi-supervised, RL), 6-Stage Pipeline, Operational Issues, **5 Prominent Real-World Applications (Nov'25)**, and **Email Spam Detection System Design (Nov'25)**.
+
+---
+
+### 🟠 Tier 2 & Tier 3: High Yield & Core Extension Questions
+*(Available in Part 2 Masterclass)*
+- **Q8. Linear Discriminant Analysis (LDA):** Supervised Dimensionality Reduction, Within-Class ($S_W$) vs Between-Class ($S_B$) Scatter, Fisher's Criterion Derivation, and **Dec'22 Solved 2D LDA Numerical**.
+- **Q9. Logistic Regression:** Sigmoid Hypothesis, Odds Ratio, Logit Function, Convex Cross-Entropy / Log-Loss Derivation, and Gradient Descent Update Rule.
+- **Q10. Multiclass Classification Strategies:** One-vs-Rest (OvR), One-vs-One (OvO), and Softmax Multinomial Logistic Regression comparative architecture.
+- **Q11. Principal Component Analysis (PCA) & SVD:** Curse of Dimensionality, Covariance Matrix Derivation, Eigen-Decomposition, and **May'23 Solved $2 \times 2$ SVD Matrix Factorization**.
+- **Q12. Graph-Based Clustering (MST):** Minimum Spanning Tree Construction (Prim's/Kruskal's), Inconsistency Edge Thresholding, and Connected Component Extraction.
+- **Q13. Model-Based Clustering (EM / GMM):** Gaussian Mixture Models, Latent Variables, E-Step Posterior Responsibilities, and M-Step Parameter Updates.
+- **Q14. Distance & Similarity Metrics:** Metric Axioms, Euclidean, Manhattan, Minkowski, Cosine, and **Mahalanobis Distance with Covariance Normalization (Nov'25)**.
+- **Q15. Model Validation & Bias-Variance Decomposition:** Generalization Error, Mathematical Bias-Variance Derivation, Trade-off Curves, K-Fold CV, Stratified K-Fold, and LOOCV.
 
 ---
 
