@@ -431,6 +431,7 @@ Value:     1    1    1    0    0
 
 #### Final Bit Array State After All Insertions:
 $$\text{Bit Array } B = [1, 1, 1, 0, 0]$$
+
 - **Occupied bit positions:** $\{0, 1, 2\}$ (Fraction of 1s = $3/5 = 60\%$)
 - **Empty bit positions:** $\{3, 4\}$
 
@@ -459,6 +460,7 @@ $$\text{Bit Array } B = [1, 1, 1, 0, 0]$$
 
 #### 1. Mathematical Proof:
 In classification and information retrieval, **Recall** (Sensitivity) is defined as:
+
 $$\text{Recall} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}$$
 
 For a Bloom Filter to achieve a recall of less than 100%, there must exist at least one **False Negative** ($\text{FN} > 0$).
@@ -468,18 +470,23 @@ A **False Negative** means:
 #### 2. Why False Negatives Are Strictly Impossible ($\text{FN} = 0$):
 1. **Deterministic Hashing:** The $k$ hash functions $h_1, h_2, \dots, h_k$ are completely deterministic. For any input $x$, $h_i(x)$ will always produce the identical position index $p_i$.
 2. **Monotonic Bit Updates (Write-Only `1`s):** During `INSERT(x)`, every bit at index $h_i(x)$ is explicitly set to `1`:
-   $$B[h_i(x)] \leftarrow 1 \quad \forall i \in \{1, 2, \dots, k\}$$
+
+$$B[h_i(x)] \leftarrow 1 \quad \forall i \in \{1, 2, \dots, k\}$$
+
 3. **No Bit Reset / No Eviction:** Standard Bloom Filters do **not** support deletions. Bits in the filter are never cleared or reset back to `0`. Once a bit transitions from `0` to `1`, it remains `1` forever.
 4. **Lookup Condition:** A lookup operation returns "Definitely NOT in set" **if and only if** at least one bit $B[h_i(x)] == 0$.
 5. **Conclusion:** If $x$ was inserted, every bit $B[h_i(x)]$ was set to `1` and could never have been set back to `0`. Therefore, a lookup on an inserted element can **never** encounter a `0` bit:
-   $$P(\text{False Negative}) = 0 \implies \text{FN} = 0$$
+
+$$P(\text{False Negative}) = 0 \implies \text{FN} = 0$$
 
 Substituting $\text{FN} = 0$ into the Recall equation:
+
 $$\text{Recall} = \frac{\text{TP}}{\text{TP} + 0} = \frac{\text{TP}}{\text{TP}} = 1.00 = \mathbf{100\%}$$
 
 #### 3. Trade-off: Precision vs Recall:
 - **Recall = 100%:** Guaranteed zero misses. If an item exists, the filter will NEVER miss it.
 - **Precision < 100%:** Because multiple keys can map to the same bit positions (hash collisions), uninserted elements can accidentally find all their corresponding bits set to `1`, causing **False Positives** ($\text{FP} > 0$).
+
 $$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}} < 100\%$$
 
 **MU Keyword Checklist:** Bloom filter, bit array, hash functions, false positive, true negative, never false negative, probabilistic, space-efficient, membership testing, 100% recall proof, TP/(TP+FN), deterministic hashing.
@@ -704,6 +711,7 @@ $$\text{Estimated Distinct Elements} = 2^R = 2^5 = \mathbf{32}$$
 
 #### 1. Algorithm: Flajolet-Martin (FM) Algorithm / HyperLogLog (HLL)
 The **Flajolet-Martin algorithm** (and its modern derivative **HyperLogLog**) is the industry-standard probabilistic algorithm used to count unique elements (cardinality estimation) in an unbounded data stream using strictly logarithmic space:
+
 $$\mathcal{O}(\log(\log N)) \text{ space compared to } \mathcal{O}(N) \text{ required by a Hash Set}$$
 
 #### 2. Two Real-Life Industrial Applications:

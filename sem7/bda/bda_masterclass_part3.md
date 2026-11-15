@@ -99,14 +99,18 @@ Predicted Preference Score
 - **Definition:** Measures how frequently a specific term $t$ appears within a given document or item description $d$.
 - **Intuition:** The more times a keyword appears in a movie's plot, the more central that theme is to the movie.
 - **Formula (Normalized):**
-  $$\text{TF}(t, d) = \frac{f_{t, d}}{\sum_{t' \in d} f_{t', d}} \quad \text{or} \quad \text{TF}(t, d) = \frac{f_{t, d}}{\max_{t'} f_{t', d}}$$
+
+$$\text{TF}(t, d) = \frac{f_{t, d}}{\sum_{t' \in d} f_{t', d}} \quad \text{or} \quad \text{TF}(t, d) = \frac{f_{t, d}}{\max_{t'} f_{t', d}}$$
+
   Where $f_{t, d}$ is the raw count of term $t$ in document $d$. Normalization prevents bias toward artificially long documents.
 
 #### 3. Inverse Document Frequency (IDF): Global Discriminative Power
 - **Definition:** Measures how rare or common a term is across the **entire catalog of $N$ items**.
 - **Intuition:** Words that appear in nearly *every* movie synopsis (like "film", "story", "actor", "world") carry virtually zero discriminative power for recommendations. Conversely, rare domain terms (like "quantum", "vampire", "cyberpunk") carry massive information content.
 - **Formula:**
-  $$\text{IDF}(t, D) = \log_{10} \left( \frac{N}{|\{d \in D : t \in d\}|} \right)$$
+
+$$\text{IDF}(t, D) = \log_{10} \left( \frac{N}{|\{d \in D : t \in d\}|} \right)$$
+
   Where:
   - $N = |D|$ is the total number of documents (items) in the database.
   - $|\{d \in D : t \in d\}|$ is the document frequency ($\text{DF}_t$), i.e., number of items containing term $t$.
@@ -118,7 +122,8 @@ $$\text{TF-IDF}(t, d, D) = \text{TF}(t, d) \times \text{IDF}(t, D)$$
 - **Item Profile Vector:** $\vec{V}_{\text{item}} = \left[ w_{1}, w_{2}, \dots, w_{|V|} \right]$ where $w_i = \text{TF-IDF}(t_i, \text{item})$.
 - **User Profile Vector:** $\vec{U}_{\text{user}} = \frac{1}{|L|} \sum_{i \in \text{Liked}} \vec{V}_i$ (average vector of items user liked).
 - **Matching Function (Cosine Similarity):**
-  $$\text{Sim}(\vec{U}, \vec{V}) = \cos(\theta) = \frac{\vec{U} \cdot \vec{V}}{\|\vec{U}\| \|\vec{V}\|} = \frac{\sum_{k} U_k \cdot V_k}{\sqrt{\sum_k U_k^2} \sqrt{\sum_k V_k^2}}$$
+
+$$\text{Sim}(\vec{U}, \vec{V}) = \cos(\theta) = \frac{\vec{U} \cdot \vec{V}}{\|\vec{U}\| \|\vec{V}\|} = \frac{\sum_{k} U_k \cdot V_k}{\sqrt{\sum_k U_k^2} \sqrt{\sum_k V_k^2}}$$
 
 ---
 
@@ -209,26 +214,33 @@ User-Based CF for User A (predicting Tablet rating):
 To compute Pearson's correlation coefficient between User 2 ($U_2$) and the other users ($U_1, U_3$), we consider only the subset of movies mutually rated by both users.
 - User 2 has rated: $\{M_1, M_2, M_4, M_5\}$ ($M_3$ is missing).
 - Therefore, the co-rated set of items between $U_2$ and $U_1$ as well as between $U_2$ and $U_3$ is:
-  $$I_{\text{common}} = \{M_1, M_2, M_4, M_5\} \quad (N = 4 \text{ items})$$
+
+$$I_{\text{common}} = \{M_1, M_2, M_4, M_5\} \quad (N = 4 \text{ items})$$
 
 Now calculate the mean ratings over these 4 co-rated items:
+
 $$\bar{r}_{u} = \frac{1}{|I_{\text{common}}|} \sum_{i \in I_{\text{common}}} r_{u, i}$$
 
 1. **User 2 Mean Rating ($\bar{r}_2$):**
-   $$\bar{r}_2 = \frac{3 + 4 + 4 + 3}{4} = \frac{14}{4} = \mathbf{3.50}$$
+
+$$\bar{r}_2 = \frac{3 + 4 + 4 + 3}{4} = \frac{14}{4} = \mathbf{3.50}$$
 
 2. **User 1 Mean Rating on Co-Rated Items ($\bar{r}_1$):**
-   $$\bar{r}_1 = \frac{2 + 3 + 1 + 1}{4} = \frac{7}{4} = \mathbf{1.75}$$
+
+$$\bar{r}_1 = \frac{2 + 3 + 1 + 1}{4} = \frac{7}{4} = \mathbf{1.75}$$
+
    *(Note: Full mean including $M_3$ is $\frac{2+3+2+1+1}{5} = 1.80$. In rigorous Pearson collaborative filtering, standard formulation computes user means across the intersection of mutually rated items $I_{uv}$.)*
 
 3. **User 3 Mean Rating on Co-Rated Items ($\bar{r}_3$):**
-   $$\bar{r}_3 = \frac{4 + 3 + 3 + 3}{4} = \frac{13}{4} = \mathbf{3.25}$$
+
+$$\bar{r}_3 = \frac{4 + 3 + 3 + 3}{4} = \frac{13}{4} = \mathbf{3.25}$$
 
 ---
 
 #### Step 2: Compute Pearson Correlation Coefficients ($sim(U_2, U_1)$ and $sim(U_2, U_3)$)
 
 The standard **Pearson Correlation Coefficient** formula is:
+
 $$\text{sim}(u, v) = \frac{\sum_{i \in I_{uv}} (r_{u, i} - \bar{r}_u)(r_{v, i} - \bar{r}_v)}{\sqrt{\sum_{i \in I_{uv}} (r_{u, i} - \bar{r}_u)^2} \cdot \sqrt{\sum_{i \in I_{uv}} (r_{v, i} - \bar{r}_v)^2}}$$
 
 ##### (A) Correlation between User 2 and User 1 ($\text{sim}(U_2, U_1)$):
@@ -243,11 +255,16 @@ $$\text{sim}(u, v) = \frac{\sum_{i \in I_{uv}} (r_{u, i} - \bar{r}_u)(r_{v, i} -
 
 - **Numerator:** $\sum = -0.125 + 0.625 - 0.375 + 0.375 = \mathbf{0.50}$
 - **Denominator:**
-  $$\sqrt{\sum (r_{2, i} - \bar{r}_2)^2} = \sqrt{1.00} = 1.00$$
-  $$\sqrt{\sum (r_{1, i} - \bar{r}_1)^2} = \sqrt{2.75} \approx 1.6583$$
-  $$\text{Denominator} = 1.00 \times 1.6583 = 1.6583$$
+
+$$\sqrt{\sum (r_{2, i} - \bar{r}_2)^2} = \sqrt{1.00} = 1.00$$
+
+$$\sqrt{\sum (r_{1, i} - \bar{r}_1)^2} = \sqrt{2.75} \approx 1.6583$$
+
+$$\text{Denominator} = 1.00 \times 1.6583 = 1.6583$$
+
 - **Similarity Value:**
-  $$\text{sim}(U_2, U_1) = \frac{0.50}{1.6583} \approx \mathbf{+0.3015}$$
+
+$$\text{sim}(U_2, U_1) = \frac{0.50}{1.6583} \approx \mathbf{+0.3015}$$
 
 ---
 
@@ -263,16 +280,22 @@ $$\text{sim}(u, v) = \frac{\sum_{i \in I_{uv}} (r_{u, i} - \bar{r}_u)(r_{v, i} -
 
 - **Numerator:** $\sum = -0.375 - 0.125 - 0.125 + 0.125 = \mathbf{-0.50}$
 - **Denominator:**
-  $$\sqrt{\sum (r_{2, i} - \bar{r}_2)^2} = \sqrt{1.00} = 1.00$$
-  $$\sqrt{\sum (r_{3, i} - \bar{r}_3)^2} = \sqrt{0.75} \approx 0.8660$$
-  $$\text{Denominator} = 1.00 \times 0.8660 = 0.8660$$
+
+$$\sqrt{\sum (r_{2, i} - \bar{r}_2)^2} = \sqrt{1.00} = 1.00$$
+
+$$\sqrt{\sum (r_{3, i} - \bar{r}_3)^2} = \sqrt{0.75} \approx 0.8660$$
+
+$$\text{Denominator} = 1.00 \times 0.8660 = 0.8660$$
+
 - **Similarity Value:**
-  $$\text{sim}(U_2, U_3) = \frac{-0.50}{0.8660} \approx \mathbf{-0.5774}$$
+
+$$\text{sim}(U_2, U_3) = \frac{-0.50}{0.8660} \approx \mathbf{-0.5774}$$
 
 ---
 
 #### Step 3: Predict Rating $\hat{r}_{2, 3}$ using Resnick's Collaborative Filtering Formula
 Using the standard deviation-from-mean weighted aggregation formula:
+
 $$\hat{r}_{u, j} = \bar{r}_u + \frac{\sum_{v \in N} \text{sim}(u, v) \cdot (r_{v, j} - \bar{r}_v)}{\sum_{v \in N} |\text{sim}(u, v)|}$$
 
 Where:
@@ -283,7 +306,9 @@ Where:
 
 ##### Numerator Calculation:
 $$\sum = \left[ \text{sim}(U_2, U_1) \times (r_{1, 3} - \bar{r}_1) \right] + \left[ \text{sim}(U_2, U_3) \times (r_{3, 3} - \bar{r}_3) \right]$$
+
 $$\sum = \left( 0.3015 \times 0.25 \right) + \left( -0.5774 \times 0.75 \right)$$
+
 $$\sum = 0.07538 - 0.43305 = \mathbf{-0.35767}$$
 
 ##### Denominator Calculation:
